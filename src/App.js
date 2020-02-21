@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.scss';
-import Converter from './Converter.jsx';
+import ConverterUI from './ConverterUI';
 
 function App() {
 
@@ -190,7 +190,7 @@ const text = '';
           Скопируйте текст с таблицы iNaturalist и вставьте в левое поле ввода.
         </header>
       <main>
-        <Converter text={text} />
+        <ConverterUI text={text} />
       </main>
     </div>
   );
