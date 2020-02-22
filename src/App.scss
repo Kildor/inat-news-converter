@@ -36,8 +36,9 @@ main {
         line-height: 2em;
         width: 2em;
         font-size: 1rem;
-        background-color: #f0f0f0;
+        background-color: #fff;
         box-shadow: inset 1px 1px 1px #fff, 1px 1px 1px #000;
+        border-radius: 50%;
       }
     }
     &:not(.html) div.html {display: none;}
@@ -54,13 +55,45 @@ main {
   }
   button.switch {
     position: absolute;
-    top:1vh;
+    top:1.5vh;
     right:1vw;
-    font-size:calc(10px + 1vmin);
-  height: 4vmin;
-  min-height: calc(10px + 1vmin);
-  line-height: 10px;
+    font-size:calc(5px + 1vmin);
+  height: calc(10px + 2vmin);
+  min-height: calc(7px + 1vmin);
+  line-height: calc(7px + 1vmin);
   padding: 0 1em;
+  span.switcher {
+    display: inline-block;
+    margin: 0 5px 0;
+    width: 2em;
+    height: .8em;
+    // height: 7px;
+    border: 1px solid #000;
+    background-color: #fff;
+    border-radius: 6px;
+    position: relative;
+    &:before {
+      content: '';
+      display: block;
+      // width: 5px;
+      // height: 5px;
+      width: .6em;
+      height: .6em;
+      border-radius: 50%;
+      border: 1px solid #000;
+      background-color: #000;
+      position: absolute;
+      left: 0;
+      top: 0px;
+    }
+    &.switch-right {
+    background-color: #eee;
+      &:before {
+        left: auto;
+        right: 0;
+      }
+    }
+  }
   }
 }
 
@@ -75,6 +108,6 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  font-size: calc(5px + 2vmin);
   color: white;
 }
