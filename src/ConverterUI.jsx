@@ -4,6 +4,18 @@ import React from 'react';
  import Switcher from './Switcher';
  import Converter from './Converter';
 
+ const Notes = ()=>{
+	 let types = ["Наблюдатели проекта",
+		 'Эксперты проекта',
+		 'Подпроекты зонтичного проекта'
+	 ];
+	 
+	 return <div className='panel panel-notes'><header>Поддерживаемые варианты</header>
+	 <div className='panel-body'>
+			 <ul>{types.map(type => <li>{type}</li>)}</ul>
+	 </div>
+	 </div>
+ }
 
 class ConverterUI extends React.Component {
 
@@ -40,6 +52,7 @@ class ConverterUI extends React.Component {
 					<textarea className='in' autoFocus onChange={this.onChangeHandler} ref={(el) => { this.areaIn = el; }} 
 					defaultValue={this.props.text}/>
 					{/* <Settings/> */}
+					<Notes/>
 				</div>
 				<div className={this.state.html?'html':'textarea'}>
 					<textarea className='out' ref={(el) => { this.areaOut = el; }} value={this.state.value} readOnly 

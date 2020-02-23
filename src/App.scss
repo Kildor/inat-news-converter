@@ -24,6 +24,18 @@ main {
       }
     }
 
+    .panel-notes {
+      text-align: left;
+      padding: .1em 1em;
+      header {
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+        ul {
+          list-style: none;
+        }
+    }
+
     & + div {
       margin-left: 1vw;
       &::before {
