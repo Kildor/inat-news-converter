@@ -1,27 +1,15 @@
 import React from 'react';
 
-class Settings extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = { showHeader: false };
-		this.onChangeHandler = this.onChangeHandler.bind(this);
-	}
-	onChangeHandler(e) {
-		const checked = e.target.getAttribute('checked');
-		this.setState({ showHeader: checked });
-	}
-
-	render() {
+export default ({ handler, settings }) => {
 		return (
-			<div className='settings'>
+			<div className='settings panel'>
+				<header>Настройки вывода</header>
+				<div className='panel-body'>
 				<label>
-					<input name='showHeader' type='checkbox' onChange={this.onChangeHandler} checked={this.state.showHeader}/>
+					<input name='showHeader' type='checkbox' onChange={handler} checked={settings.showHeader}/>&nbsp;
 						Показывать заголовок таблицы
 				</label>
-
+			</div>
 			</div>
 		);
-	}
-}
-
-export default Settings;
+	};

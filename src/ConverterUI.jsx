@@ -1,18 +1,19 @@
 import React from 'react';
 
-// import Settings from './Settings.js';
+import Settings from './Settings';
  import Switcher from './Switcher';
  import Converter from './Converter';
+import DataType from './DataType';
 
- const Notes = ()=>{
-	 let types = ["Наблюдатели проекта",
-		 'Эксперты проекта',
-		 'Подпроекты зонтичного проекта'
+ const Notes = (props)=>{
+	 let types = [{key: DataType.Observers, title: "Наблюдатели проекта"},
+		 { key: DataType.Experts, title: 'Эксперты проекта'},
+		 { key: DataType.Subprojects, title: 'Подпроекты зонтичного проекта'}
 	 ];
-	 
+
 	 return <div className='panel panel-notes'><header>Поддерживаемые варианты</header>
 	 <div className='panel-body'>
-			 <ul>{types.map(type => <li>{type}</li>)}</ul>
+	<ul>{types.map(type => <li className={type.key === props.currentType ? "active":null } key={type.key}>{type.title}</li>)}</ul>
 	 </div>
 	 </div>
  }
@@ -24,20 +25,27 @@ class ConverterUI extends React.Component {
 	}
 	constructor(props) {
 		super(props);
-		this.state = {value: "", html: false};
+		this.state = {value: "", html: false, currentType:DataType.UNKNOWN, showHeader: true};
 		this.onChangeHandler = this.onChangeHandler.bind(this);
-		this.onClickHandler = this.onClickHandler.bind(this);
+		this.onClickSwitcherHandler = this.onClickSwitcherHandler.bind(this);
+		this.onChangeSettingsHandler = this.onChangeSettingsHandler.bind(this);
 
-		this.converter = new Converter();
-
+		this.converter = new Converter({showHeader: this.state.showHeader});
 	}
+
 
 	onChangeHandler (e) {
-		const val = e.target.value;
-		this.setState({ value: this.converter.convert(val)});
+		this.setState({ value: this.converter.convert(e.target.value), currentType: this.converter.lastConvertedType });
 	}
-	onClickHandler (e) {
+	onClickSwitcherHandler (e) {
 		this.setState({html: !this.state.html});	
+	}
+
+	onChangeSettingsHandler (e) {
+		this.setState({ showHeader: e.target.checked});	
+		this.converter.updateSettings({ showHeader: e.target.checked});
+		this.setState({ value: this.converter.convert(this.areaIn.value)});	
+
 	}
 
 	showHTML(){
@@ -47,18 +55,18 @@ class ConverterUI extends React.Component {
 	render() {
 		return (
 			<>
-				<Switcher clickHandler={this.onClickHandler} isHTML={this.state.html} />
+				<Switcher clickHandler={this.onClickSwitcherHandler} isHTML={this.state.html} />
 				<div className='in-wp'>
 					<textarea className='in' autoFocus onChange={this.onChangeHandler} ref={(el) => { this.areaIn = el; }} 
 					defaultValue={this.props.text}/>
-					{/* <Settings/> */}
-					<Notes/>
+					<Notes currentType={this.state.currentType}/>
 				</div>
 				<div className={this.state.html?'html':'textarea'}>
 					<textarea className='out' ref={(el) => { this.areaOut = el; }} value={this.state.value} readOnly 
 					onFocus={()=>{this.areaOut.select();}}
 					/>
-					<div className='html' dangerouslySetInnerHTML={this.showHTML()}/>
+					<div className='html' dangerouslySetInnerHTML={this.showHTML()} />
+					<Settings handler={this.onChangeSettingsHandler} settings={{showHeader:this.state.showHeader}} />
 				</div>
 			</>
 		);

@@ -24,7 +24,7 @@ main {
       }
     }
 
-    .panel-notes {
+    .panel {
       text-align: left;
       padding: .1em 1em;
       header {
@@ -33,6 +33,11 @@ main {
       }
         ul {
           list-style: none;
+          li {
+            &.active {
+              font-weight: bold;
+            }
+          }
         }
     }
 
@@ -62,7 +67,12 @@ main {
       div.html {
         display: block;
         padding: 1em 0;
+        flex:1;
+        border-bottom: 1px solid #000;
         }
+      div.settings {
+        text-align: left;
+      }
     }
   }
   button.switch {
