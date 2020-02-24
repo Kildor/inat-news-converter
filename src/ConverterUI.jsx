@@ -10,7 +10,9 @@ import './App.scss';
 	 let types = [{key: DataType.Observers, title: "Наблюдатели проекта"},
 		 { key: DataType.Experts, title: 'Эксперты проекта'},
 		 { key: DataType.Species, title: 'Виды проекта'},
-		 { key: DataType.Subprojects, title: 'Подпроекты зонтичного проекта'}
+		 { key: DataType.Subprojects, title: 'Подпроекты зонтичного проекта'},
+		 { key: DataType.Text, title: 'Текст (разбиение на абзацы)'},
+		 { key: DataType.Mix, title: 'Смешанные данные (разделённые двумя переносами строки)'},
 	 ];
 
 	 return <div className='panel panel-notes'><header>Поддерживаемые варианты данных</header>

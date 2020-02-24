@@ -11,17 +11,19 @@ class Converter {
 		this.#settings = Object.assign(this.#settings,settings);
 	}
 
-	checkIfPeople(text) {
+	checkType(text) {
 			let firstLine = text.substr(0, text.indexOf('\n')).trim();
-			if (/^(.+)\t(.+)\t(.+)\t(.+)$/.test(firstLine)) {
+			if (firstLine.indexOf('\'') === 0 ) return DataType.Text;
+			else if (/^(.+)\t(.+)\t(.+)\t(.+)$/.test(firstLine))
 				return DataType.Observers;
-			}
 			else if (/^(.+)\t(.+)\t(.+)$/.test(firstLine))
 				return DataType.Experts;
 			else if (/^\s*[\d ]+\s*$/.test(firstLine))
 				return DataType.Subprojects;
-			else
+			else if (/^\s*[\d]+\s.+$/.test(firstLine))
 				return DataType.Species;
+			else
+				return DataType.Text;
 		};
 
 		writeTableHeader(fields) {
@@ -55,13 +57,14 @@ class Converter {
 			let converted = '';
 			let items = [];
 			let item = null;
-			const regexpCount = /^[0-9]+\s.+$/;
+			const regexpCount = /^[A-Z]*([0-9]+)\s.+$/;
 			text.split('\n').forEach(line => {
 				line = line.trim();
-				if (regexpCount.test(line)) {
+				let match = line.match(regexpCount);
+				if (!!match) {
 					if (item != null) items.push(item);
 					item = new Item();
-					item.count = line.split(' ')[0];
+					item.count = match[1];
 				}
 				else if (item !==null)
 					item.title.push(line);
@@ -75,7 +78,10 @@ class Converter {
 					let title = '';
 					if (item.title.length === 1) {
 						title = `<em>${item.title[0]}</em>`;
-					} else {
+					} else if(item.title.length > 0) {
+						if (item.title[0].length <3) { //CC
+							item.title.shift();
+						}
 						if (this.#settings.latinFirst) {
 							title = `${item.title[1]} <em>(${item.title[0]})</em>`;
 						} else {
@@ -106,35 +112,59 @@ class Converter {
 			});
 			return converted;
 		}
+
+		convertText(text) {
+			let converted = '';
+			converted = text.split('\n').join('<br/>');
+			if( converted !== '<br/>') return '<p>'+converted+'</p>\n';
+			return '';
+
+		}
 		convert = (text) => {
 			let converted = '';
-			converted += "<table class='table table-striped table-hover table-condensed'>\n";
 			text = text.trim();
-			if (text.length === 0)
+			if (text.length === 0) {
+				this.lastConvertedType = DataType.UNKNOWN;
 				return '';
-			this.lastConvertedType = this.checkIfPeople(text);
-			switch (this.lastConvertedType) {
-				case DataType.Observers:
-					converted += this.convertObservers(text);
-					break;
-				case DataType.Experts:
-					converted += this.convertExperts(text);
-					break;
-				case DataType.Subprojects:
-					converted += this.convertSubProjects(text);
-					break;
-				case DataType.Species:
-					converted += this.convertSpecies(text);
-					break;
-				case DataType.UNKNOWN:
-				default:
-					converted+='<tr><td>Неизвестный вариант</td></tr/>';
-					break;
-
 			}
-			converted += '</table>\n';
-			return converted.replace(/(\/t[dh]>)(<t[dh])/g, '$1 $2');
+			
+			let convertedType = -1;
+			text.split(/(?:\r?\n){2,}/).forEach(block => {
+				// if (text.contains())
+				this.lastConvertedType = this.checkType(block);
+
+				if (convertedType > 0 && convertedType!== this.lastConvertedType) convertedType = DataType.Mix;
+				else convertedType = this.lastConvertedType;
+				
+				if (this.lastConvertedType !== DataType.Text) converted += "<table class='table table-striped table-hover table-condensed'>\n";
+				switch (this.lastConvertedType) {
+					case DataType.Text:
+						converted += this.convertText(block);
+						break;
+					case DataType.Observers:
+						converted += this.convertObservers(block);
+						break;
+					case DataType.Experts:
+						converted += this.convertExperts(block);
+						break;
+					case DataType.Subprojects:
+						converted += this.convertSubProjects(block);
+						break;
+					case DataType.Species:
+						converted += this.convertSpecies(block);
+						break;
+					case DataType.UNKNOWN:
+					default:
+						converted += '<tr><td>Неизвестный вариант</td></tr/>';
+						break;
+				}
+				if (this.lastConvertedType !== DataType.Text) converted += '</table>\n';
+			});
+			this.lastConvertedType = convertedType;
+		converted.replace(/(\/t[dh]>)(<t[dh])/g, '$1 $2');
+		return converted;
 		};
+
 		updateSettings(newSettings) {
 			this.#settings = Object.assign(this.#settings, newSettings);
 		}
