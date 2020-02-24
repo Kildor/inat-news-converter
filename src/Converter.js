@@ -83,6 +83,25 @@ class Converter {
 				}
 			return converted;
 		}
+		convertExperts(text) {
+			let converted = '';
+			if (this.#settings.showHeader) converted += '<thead><tr><th>Место</th><th>Эксперт</th><th>Идентификаций</th></tr></thead>\n';
+			text.split('\n').forEach(line => {
+				if (/^\D+\t/.test(line)) return;
+				converted += line.trim().replace(/^(.+)\t(.+)\t(.+)$/, '<tr><td>$1</td><td>@$2</td><td>$3</td></tr>\n');
+			});
+			return converted;
+		}
+
+		convertObservers(text) {
+			let converted = '';
+			if (this.#settings.showHeader) converted += '<thead><tr><th>Место</th><th>Наблюдатель</th><th>Наблюдений</th><th>Видов</th></tr></thead>\n';
+			text.split('\n').forEach(line => {
+				if (/^\D+\t/.test(line)) return;
+				converted += line.trim().replace(/^(.+)\t(.+)\t(.+)\t(.+)$/, '<tr><td>$1</td><td>@$2</td><td>$3</td><td>$4</td></tr>\n');
+			});
+			return converted;
+		}
 		convert = (text) => {
 			let converted = '';
 			converted += "<table class='table table-striped table-hover table-condensed'>\n";
@@ -92,18 +111,10 @@ class Converter {
 			this.lastConvertedType = this.checkIfPeople(text);
 			switch (this.lastConvertedType) {
 				case DataType.Observers:
-					if (this.#settings.showHeader) converted += '<thead><tr><th>Место</th><th>Наблюдатель</th><th>Наблюдений</th><th>Видов</th></tr></thead>\n';
-					text.split('\n').forEach(line => {
-						if(/^\D+\t/.test(line)) return;
-						converted += line.trim().replace(/^(.+)\t(.+)\t(.+)\t(.+)$/, '<tr><td>$1</td><td>@$2</td><td>$3</td><td>$4</td></tr>\n');
-					});
+					converted += this.convertObservers(text);
 					break;
 				case DataType.Experts:
-					if (this.#settings.showHeader) converted += '<thead><tr><th>Место</th><th>Эксперт</th><th>Идентификаций</th></tr></thead>\n';
-					text.split('\n').forEach(line => {
-						if (/^\D+\t/.test(line)) return;
-						converted += line.trim().replace(/^(.+)\t(.+)\t(.+)$/, '<tr><td>$1</td><td>@$2</td><td>$3</td></tr>\n');
-					});
+					converted += this.convertExperts(text);
 					break;
 				case DataType.Subprojects:
 					converted += this.convertSubProjects(text);
