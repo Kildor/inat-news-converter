@@ -13,7 +13,7 @@ import './App.scss';
 		 { key: DataType.Subprojects, title: 'Подпроекты зонтичного проекта'}
 	 ];
 
-	 return <div className='panel panel-notes'><header>Поддерживаемые варианты</header>
+	 return <div className='panel panel-notes'><header>Поддерживаемые варианты данных</header>
 	 <div className='panel-body'>
 	<ul>{types.map(type => <li className={type.key === props.currentType ? "active":null } key={type.key}>{type.title}</li>)}</ul>
 	 </div>
@@ -79,10 +79,9 @@ class ConverterUI extends Component {
 					onFocus={()=>{this.areaOut.select();}}
 					/>
 					<div className='html' dangerouslySetInnerHTML={this.showHTML()} />
-						{navigator.clipboard ? 
+						{navigator.clipboard && this.state.value.length > 0 ? 
 						<button onClick={() => {
 								navigator.clipboard.writeText(this.areaOut.value).then(() => this.setState({ copied: true }));
-
 							setTimeout(()=>{
 								this.setState({copied:false})
 							}, 5000)

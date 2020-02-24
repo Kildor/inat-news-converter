@@ -24,6 +24,10 @@ class Converter {
 				return DataType.Species;
 		};
 
+		writeTableHeader(fields) {
+			if (!this.#settings.showHeader) return '';
+			return `<thead><tr><th>${fields.join('</th><th>')}</th></tr></thead>`;
+		}
 		convertSubProjects = (text) => {
 			let converted = '';
 			let items = [];
@@ -42,7 +46,7 @@ class Converter {
 			if (item !== null) items.push(item);
 
 			if (items.length > 0) {
-				if(this.#settings.showHeader) converted += '<thead><tr><th>Проект</th><th>Количество</th></tr></thead>\n';
+				converted += this.writeTableHeader(['Проект', 'Количество']);
 				items.forEach(item => converted += `<tr><td>${item.title[0]}</td><td>${item.count}</td></tr>\n`);
 				}
 			return converted;
@@ -65,7 +69,7 @@ class Converter {
 			if (item!==null) items.push(item);
 
 			if (items.length > 0) {
-				if(this.#settings.showHeader) converted += '<thead><tr><th>Вид</th><th>Количество наблюдений</th></tr></thead>\n';
+				converted += this.writeTableHeader(['Вид', 'Количество наблюдений']);
 
 				items.forEach(item => {
 					let title = '';
@@ -85,7 +89,7 @@ class Converter {
 		}
 		convertExperts(text) {
 			let converted = '';
-			if (this.#settings.showHeader) converted += '<thead><tr><th>Место</th><th>Эксперт</th><th>Идентификаций</th></tr></thead>\n';
+			converted += this.writeTableHeader(['Место', 'Эксперт', 'Идентификаций']);
 			text.split('\n').forEach(line => {
 				if (/^\D+\t/.test(line)) return;
 				converted += line.trim().replace(/^(.+)\t(.+)\t(.+)$/, '<tr><td>$1</td><td>@$2</td><td>$3</td></tr>\n');
@@ -95,7 +99,7 @@ class Converter {
 
 		convertObservers(text) {
 			let converted = '';
-			if (this.#settings.showHeader) converted += '<thead><tr><th>Место</th><th>Наблюдатель</th><th>Наблюдений</th><th>Видов</th></tr></thead>\n';
+			converted += this.writeTableHeader(['Место', 'Наблюдатель', 'Наблюдений','Видов']);
 			text.split('\n').forEach(line => {
 				if (/^\D+\t/.test(line)) return;
 				converted += line.trim().replace(/^(.+)\t(.+)\t(.+)\t(.+)$/, '<tr><td>$1</td><td>@$2</td><td>$3</td><td>$4</td></tr>\n');
