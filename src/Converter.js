@@ -118,7 +118,7 @@ class Converter {
 
 			}
 			converted += '</table>\n';
-			return converted;
+			return converted.replace(/(\/t[dh]>)(<t[dh])/g, '$1 $2');
 		};
 		updateSettings(newSettings) {
 			this.#settings = Object.assign(this.#settings, newSettings);
