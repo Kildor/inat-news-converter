@@ -113,13 +113,13 @@ class Converter {
 			return converted;
 		}
 
-		convertText(text) {
-			let converted = '';
-			converted = text.split('\n').join('<br/>');
-			if( converted !== '<br/>') return '<p>'+converted+'</p>\n';
-			return '';
+	convertText(text) {
+		let converted = '';
+		converted = text.split('\n').map(s => s.indexOf('\'') === 0 ? s.substr(1, s.length) : s).join('<br/>\n');
+		if (converted.trim() !== '<br/>') return '<p>' + converted + '</p>\n';
+		return '';
 
-		}
+	}
 		convert = (text) => {
 			let converted = '';
 			text = text.trim();

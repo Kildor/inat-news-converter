@@ -11,13 +11,13 @@ import './App.scss';
 		 { key: DataType.Experts, title: 'Эксперты проекта'},
 		 { key: DataType.Species, title: 'Виды проекта'},
 		 { key: DataType.Subprojects, title: 'Подпроекты зонтичного проекта'},
-		 { key: DataType.Text, title: 'Текст (разбиение на абзацы)'},
+		 { key: DataType.Text, title: 'Текст (разбиение на абзацы).', note: 'Если скрипт неверно разбирает строку, начните её со знака «\'»'},
 		 { key: DataType.Mix, title: 'Смешанные данные (разделённые двумя переносами строки)'},
 	 ];
 
 	 return <div className='panel panel-notes'><header>Поддерживаемые варианты данных</header>
 	 <div className='panel-body'>
-	<ul>{types.map(type => <li className={type.key === props.currentType ? "active":null } key={type.key}>{type.title}</li>)}</ul>
+			 <ul>{types.map(type => <li className={type.key === props.currentType ? "active" : null} key={type.key}>{type.title}{!!type.note ? <small>{type.note}</small>:null}</li>)}</ul>
 	 </div>
 	 </div>
  }

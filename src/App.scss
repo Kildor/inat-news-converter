@@ -38,6 +38,11 @@ main {
             &.active {
               font-weight: bold;
             }
+            small {
+              display: block;
+              margin-left: 1em;
+              font-style: italic;
+            }
           }
         }
       &.panel-settings {
