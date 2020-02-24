@@ -23,7 +23,6 @@ import './App.scss';
 class ConverterUI extends Component {
 
 	componentDidMount() {
-		console.dir(navigator.clipboard);
 		this.setState({ value: this.converter.convert(this.areaIn.value)});
 	}
 	constructor(props) {
@@ -36,13 +35,19 @@ class ConverterUI extends Component {
 			copied: false
 		};
 		this.onChangeHandler = this.onChangeHandler.bind(this);
+		this.copyHandler = this.copyHandler.bind(this);
 		this.onClickSwitcherHandler = this.onClickSwitcherHandler.bind(this);
 		this.onChangeSettingsHandler = this.onChangeSettingsHandler.bind(this);
 
 		this.converter = new Converter({ showHeader: this.state.showHeader, latinFirst: this.state.latinFirst});
 	}
 
-
+	copyHandler(e) {
+			navigator.clipboard.writeText(this.areaOut.value).then(() => this.setState({ copied: true }));
+			setTimeout(() => {
+				this.setState({ copied: false })
+			}, 5000)
+	}
 	onChangeHandler (e) {
 		this.setState({ value: this.converter.convert(e.target.value), currentType: this.converter.lastConvertedType,copied:false });
 	}
@@ -80,12 +85,7 @@ class ConverterUI extends Component {
 					/>
 					<div className='html' dangerouslySetInnerHTML={this.showHTML()} />
 						{navigator.clipboard && this.state.value.length > 0 ? 
-						<button onClick={() => {
-								navigator.clipboard.writeText(this.areaOut.value).then(() => this.setState({ copied: true }));
-							setTimeout(()=>{
-								this.setState({copied:false})
-							}, 5000)
-								}} className={"btn-copy" + (this.state.copied ? ' success' : '')}><span className='success-mark'>✔</span> {(this.state.copied ? 'Copied' : 'Copy')}</button>
+						<button onClick={this.copyHandler} className={"btn-copy" + (this.state.copied ? ' success' : '')}><span className='success-mark'>✔</span> {(this.state.copied ? 'Copied' : 'Copy')}</button>
 						: null
 					}
 						</div>
