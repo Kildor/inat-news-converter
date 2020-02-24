@@ -1,8 +1,12 @@
 import DataType from './DataType.js';
 
+class Item {
+	count = 0;
+	title = [];
+}
 class Converter {
 	lastConvertedType = DataType.UNKNOWN;
-	#settings = {showHeader:true};
+	#settings = {showHeader:true, latinFirst: false};
 	constructor(settings) {
 		this.#settings = Object.assign(this.#settings,settings);
 	}
@@ -14,26 +18,68 @@ class Converter {
 			}
 			else if (/^(.+)\t(.+)\t(.+)$/.test(firstLine))
 				return DataType.Experts;
-			else
+			else if (/^\s*\d+\s*$/.test(firstLine))
 				return DataType.Subprojects;
+			else
+				return DataType.Species;
 		};
 
 		convertSubProjects = (text) => {
 			let converted = '';
-			let count = [], titles = [];
+			let items = [];
+			let item = null;
 			const regexpCount = /^[0-9 ]+$/;
 			text.split('\n').forEach(line => {
 				line = line.trim();
-				if (regexpCount.test(line))
-					count.push(line);
-				else
-					titles.push(line);
+				if (regexpCount.test(line)) {
+					if (item != null) items.push(item);
+					item = new Item();
+					item.count = line.split(' ')[0];
+				}
+				else if (item !== null)
+					item.title.push(line);
 			});
-			if (Math.max(count.length, titles.length) > 0) {
+			if (item !== null) items.push(item);
+
+			if (items.length > 0) {
 				if(this.#settings.showHeader) converted += '<thead><tr><th>Проект</th><th>Количество</th></tr></thead>\n';
-				for (let i = 0, j = Math.max(count.length, titles.length); i < j; i++) {
-					converted += `<tr><td>${titles[i]}</td><td>${count[i]}</td></tr>\n`;
+				items.forEach(item => converted += `<tr><td>${item.title[0]}</td><td>${item.count}</td></tr>\n`);
+				}
+			return converted;
+		}
+		convertSpecies = (text) => {
+			let converted = '';
+			let items = [];
+			let item = null;
+			const regexpCount = /^[0-9]+\s.+$/;
+			text.split('\n').forEach(line => {
+				line = line.trim();
+				if (regexpCount.test(line)) {
+					if (item != null) items.push(item);
+					item = new Item();
+					item.count = line.split(' ')[0];
+				}
+				else if (item !==null)
+					item.title.push(line);
+			});
+			if (item!==null) items.push(item);
+
+			if (items.length > 0) {
+				if(this.#settings.showHeader) converted += '<thead><tr><th>Вид</th><th>Количество наблюдений</th></tr></thead>\n';
+
+				items.forEach(item => {
+					let title = '';
+					if (item.title.length === 1) {
+						title = `<em>${item.title[0]}</em>`;
+					} else {
+						if (this.#settings.latinFirst) {
+							title = `${item.title[1]} <em>(${item.title[0]})</em>`;
+						} else {
+							title = `${item.title[0]} <em>(${item.title[1]})</em>`;
+						}
 					}
+					converted += `<tr><td>${title}</td><td>${item.count}</td></tr>\n`}
+					);
 				}
 			return converted;
 		}
@@ -62,7 +108,9 @@ class Converter {
 				case DataType.Subprojects:
 					converted += this.convertSubProjects(text);
 					break;
-
+				case DataType.Species:
+					converted += this.convertSpecies(text);
+					break;
 				case DataType.UNKNOWN:
 				default:
 					converted+='<tr><td>Неизвестный вариант</td></tr/>';

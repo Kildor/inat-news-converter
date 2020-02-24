@@ -39,6 +39,11 @@ main {
             }
           }
         }
+      &.panel-settings {
+        label {
+          display: block;
+        }
+      }
     }
 
     & + div {

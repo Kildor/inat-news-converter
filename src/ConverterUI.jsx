@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 
 import Settings from './Settings';
  import Switcher from './Switcher';
@@ -8,6 +8,7 @@ import DataType from './DataType';
  const Notes = (props)=>{
 	 let types = [{key: DataType.Observers, title: "Наблюдатели проекта"},
 		 { key: DataType.Experts, title: 'Эксперты проекта'},
+		 { key: DataType.Species, title: 'Виды проекта'},
 		 { key: DataType.Subprojects, title: 'Подпроекты зонтичного проекта'}
 	 ];
 
@@ -18,19 +19,19 @@ import DataType from './DataType';
 	 </div>
  }
 
-class ConverterUI extends React.Component {
+class ConverterUI extends Component {
 
 	componentDidMount() {
 		this.setState({ value: this.converter.convert(this.areaIn.value)});
 	}
 	constructor(props) {
 		super(props);
-		this.state = {value: "", html: false, currentType:DataType.UNKNOWN, showHeader: true};
+		this.state = {value: "", html: false, currentType:DataType.UNKNOWN, showHeader: true, latinFirst:false};
 		this.onChangeHandler = this.onChangeHandler.bind(this);
 		this.onClickSwitcherHandler = this.onClickSwitcherHandler.bind(this);
 		this.onChangeSettingsHandler = this.onChangeSettingsHandler.bind(this);
 
-		this.converter = new Converter({showHeader: this.state.showHeader});
+		this.converter = new Converter({ showHeader: this.state.showHeader, latinFirst: this.state.latinFirst});
 	}
 
 
@@ -42,8 +43,10 @@ class ConverterUI extends React.Component {
 	}
 
 	onChangeSettingsHandler (e) {
-		this.setState({ showHeader: e.target.checked});	
-		this.converter.updateSettings({ showHeader: e.target.checked});
+		let newSettings = {};
+		newSettings[e.target.name]=e.target.checked;
+		this.setState(newSettings);
+		this.converter.updateSettings(newSettings);
 		this.setState({ value: this.converter.convert(this.areaIn.value)});	
 
 	}
