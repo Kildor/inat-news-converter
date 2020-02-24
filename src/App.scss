@@ -8,6 +8,7 @@
 main {
   display: flex;
   flex: 1 0 auto;
+    max-height: calc(100vh - 6vmin);
   > div {
     flex: 1 1 50%;
     background-color: #eee;
@@ -77,16 +78,18 @@ main {
       }
       div.html {
         display: block;
-        padding: 1em 0;
+        padding: 1em;
+        text-align: left;
         flex:1;
-        border-bottom: 1px solid #000;
+        overflow: auto;
         }
     }
     .wrapper {
       flex: 1;
       position: relative;
       display: flex;
-      
+        border-bottom: 1px solid #000;
+        overflow: hidden;      
     }
       div.settings {
         text-align: left;
