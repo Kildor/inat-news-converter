@@ -1,18 +1,22 @@
 import React from 'react';
+import preferences from './preferences.json';
 
+const Setting = (props) => {
+	return (
+		<label>
+			<input name={props.name} type='checkbox' onChange={props.handler} checked={props.value} />&nbsp;
+						{props.children}
+		</label>
+	);
+}
 export default ({ handler, settings }) => {
+let s = preferences.map(pref=><Setting key={pref.name} name={pref.name} handler={handler} value={settings[pref.name]} >{pref.title}{pref.note?<><br/><small>{pref.note}</small></>:null}</Setting>);
+
 		return (
 			<div className='panel-settings panel'>
-				<header>Настройки вывода</header>
+				<header>Настройки конвертера</header>
 				<div className='panel-body'>
-				<label>
-					<input name='showHeader' type='checkbox' onChange={handler} checked={settings.showHeader}/>&nbsp;
-						Показывать заголовок таблицы
-				</label>
-				<label>
-					<input name='latinFirst' type='checkbox' onChange={handler} checked={settings.latinFirst}/>&nbsp;
-						Латинское название вначале
-				</label>
+					{s}
 			</div>
 			</div>
 		);

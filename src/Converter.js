@@ -18,7 +18,7 @@ class Converter {
 			}
 			else if (/^(.+)\t(.+)\t(.+)$/.test(firstLine))
 				return DataType.Experts;
-			else if (/^\s*\d+\s*$/.test(firstLine))
+			else if (/^\s*[\d ]+\s*$/.test(firstLine))
 				return DataType.Subprojects;
 			else
 				return DataType.Species;
@@ -34,7 +34,7 @@ class Converter {
 				if (regexpCount.test(line)) {
 					if (item != null) items.push(item);
 					item = new Item();
-					item.count = line.split(' ')[0];
+					item.count = line;
 				}
 				else if (item !== null)
 					item.title.push(line);
@@ -95,14 +95,14 @@ class Converter {
 					if (this.#settings.showHeader) converted += '<thead><tr><th>Место</th><th>Наблюдатель</th><th>Наблюдений</th><th>Видов</th></tr></thead>\n';
 					text.split('\n').forEach(line => {
 						if(/^\D+\t/.test(line)) return;
-						converted += line.trim().replace(/^(.+)\t(.+)\t(.+)\t(.+)$/, '<tr><td>$1</td> <td>@$2</td> <td>$3</td> <td>$4</td></tr>\n');
+						converted += line.trim().replace(/^(.+)\t(.+)\t(.+)\t(.+)$/, '<tr><td>$1</td><td>@$2</td><td>$3</td><td>$4</td></tr>\n');
 					});
 					break;
 				case DataType.Experts:
 					if (this.#settings.showHeader) converted += '<thead><tr><th>Место</th><th>Эксперт</th><th>Идентификаций</th></tr></thead>\n';
 					text.split('\n').forEach(line => {
 						if (/^\D+\t/.test(line)) return;
-						converted += line.trim().replace(/^(.+)\t(.+)\t(.+)$/, '<tr><td>$1</td> <td>@$2</td> <td>$3</td></tr>\n');
+						converted += line.trim().replace(/^(.+)\t(.+)\t(.+)$/, '<tr><td>$1</td><td>@$2</td><td>$3</td></tr>\n');
 					});
 					break;
 				case DataType.Subprojects:

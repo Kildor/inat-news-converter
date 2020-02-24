@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 
 import Settings from './Settings';
- import Switcher from './Switcher';
  import Converter from './Converter';
 import DataType from './DataType';
+import Header from './Header';
+import './App.scss';
 
  const Notes = (props)=>{
 	 let types = [{key: DataType.Observers, title: "Наблюдатели проекта"},
@@ -22,11 +23,18 @@ import DataType from './DataType';
 class ConverterUI extends Component {
 
 	componentDidMount() {
+		console.dir(navigator.clipboard);
 		this.setState({ value: this.converter.convert(this.areaIn.value)});
 	}
 	constructor(props) {
 		super(props);
-		this.state = {value: "", html: false, currentType:DataType.UNKNOWN, showHeader: true, latinFirst:false};
+		this.state = {value: "", 
+			html: true, 
+			currentType:DataType.UNKNOWN, 
+			showHeader: true, 
+			latinFirst:false,
+			copied: false
+		};
 		this.onChangeHandler = this.onChangeHandler.bind(this);
 		this.onClickSwitcherHandler = this.onClickSwitcherHandler.bind(this);
 		this.onChangeSettingsHandler = this.onChangeSettingsHandler.bind(this);
@@ -36,7 +44,7 @@ class ConverterUI extends Component {
 
 
 	onChangeHandler (e) {
-		this.setState({ value: this.converter.convert(e.target.value), currentType: this.converter.lastConvertedType });
+		this.setState({ value: this.converter.convert(e.target.value), currentType: this.converter.lastConvertedType,copied:false });
 	}
 	onClickSwitcherHandler (e) {
 		this.setState({html: !this.state.html});	
@@ -57,21 +65,36 @@ class ConverterUI extends Component {
 
 	render() {
 		return (
-			<>
-				<Switcher clickHandler={this.onClickSwitcherHandler} isHTML={this.state.html} />
+			<div className="App">
+				<Header clickHandler={this.onClickSwitcherHandler} isHTML={this.state.html} />
+				<main>
 				<div className='in-wp'>
 					<textarea className='in' autoFocus onChange={this.onChangeHandler} ref={(el) => { this.areaIn = el; }} 
 					defaultValue={this.props.text}/>
 					<Notes currentType={this.state.currentType}/>
 				</div>
 				<div className={this.state.html?'html':'textarea'}>
+					<div className='wrapper'>
 					<textarea className='out' ref={(el) => { this.areaOut = el; }} value={this.state.value} readOnly 
 					onFocus={()=>{this.areaOut.select();}}
 					/>
 					<div className='html' dangerouslySetInnerHTML={this.showHTML()} />
+						{navigator.clipboard ? 
+						<button onClick={() => {
+								navigator.clipboard.writeText(this.areaOut.value).then(() => this.setState({ copied: true }));
+
+							setTimeout(()=>{
+								this.setState({copied:false})
+							}, 5000)
+								}} className={"btn-copy" + (this.state.copied ? ' success' : '')}><span className='success-mark'>✔</span> {(this.state.copied ? 'Copied' : 'Copy')}</button>
+						: null
+					}
+						</div>
+
 					<Settings handler={this.onChangeSettingsHandler} settings={{showHeader:this.state.showHeader}} />
 				</div>
-			</>
+				</main>
+			</div>
 		);
 	}
 }
