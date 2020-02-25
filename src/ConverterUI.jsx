@@ -4,6 +4,7 @@ import Settings from './Settings';
  import Converter from './Converter';
 import DataType from './DataType';
 import Header from './Header';
+import preferences from './preferences.json';
 import './App.scss';
 
  const Notes = (props)=>{
@@ -33,9 +34,10 @@ class ConverterUI extends Component {
 			html: true, 
 			currentType:DataType.UNKNOWN, 
 			showHeader: true, 
-			latinFirst:false,
-			copied: false
 		};
+		for(let p of preferences) {
+			this.state[p.name] = p.default;
+		}
 		this.onChangeHandler = this.onChangeHandler.bind(this);
 		this.copyHandler = this.copyHandler.bind(this);
 		this.onClickSwitcherHandler = this.onClickSwitcherHandler.bind(this);

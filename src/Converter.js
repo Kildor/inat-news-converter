@@ -1,4 +1,5 @@
 import DataType from './DataType.js';
+import markdown from 'markdown';
 
 class Item {
 	count = 0;
@@ -6,7 +7,7 @@ class Item {
 }
 class Converter {
 	lastConvertedType = DataType.UNKNOWN;
-	#settings = {showHeader:true, latinFirst: false};
+	#settings = {showHeader:true, latinFirst: false, useMarkdown:false};
 	constructor(settings) {
 		this.#settings = Object.assign(this.#settings,settings);
 	}
@@ -115,10 +116,15 @@ class Converter {
 
 	convertText(text) {
 		let converted = '';
-		converted = text.split('\n').map(s => s.indexOf('\'') === 0 ? s.substr(1, s.length) : s).join('<br/>\n');
-		if (converted.trim() !== '<br/>') return '<p>' + converted + '</p>\n';
-		return '';
-
+		if (text.indexOf('\'') === 0) text = text.substr(1, text.length).trim();
+		if (text.length === 0) return '';
+		if (this.#settings.useMarkdown) {
+			converted = markdown.parse(text);
+		} else {
+			converted = '<p>' + text + '</p>'
+		}
+		converted = converted.split('\n').join('<br/>\n');
+		return converted + '\n';
 	}
 		convert = (text) => {
 			let converted = '';

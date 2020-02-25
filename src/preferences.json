@@ -1,6 +1,9 @@
 [
-	{"name":"showHeader", "title": "Показывать заголовок таблицы"},
+	{"name":"showHeader", "title": "Показывать заголовок таблицы", "default": true},
+	{"name":"useMarkdown", "title": "Использовать Markdown в качестве парсера блоков текста",
+		"default": false},
 	{"name":"latinFirst", 
 		"title": "Латинское название вначале",
-		"note":"Зависит от соответствующей настройки в iNaturalist"}
+		"note":"Зависит от соответствующей настройки в iNaturalist",
+		"default": false}
 ]
