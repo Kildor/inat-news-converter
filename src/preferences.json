@@ -5,5 +5,12 @@
 	{"name":"latinFirst", 
 		"title": "Латинское название вначале",
 		"note":"Зависит от соответствующей настройки в iNaturalist",
-		"default": false}
+		"default": false},
+	{"name":"removeDelimeters", 
+		"title": "Убирать разделители между разрядами",
+		"default": false},
+	{"name":"addUserlink", 
+		"title": "Добавлять @ перед именем пользователя",
+		"default": true}
+
 ]

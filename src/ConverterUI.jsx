@@ -34,6 +34,7 @@ class ConverterUI extends Component {
 			html: true, 
 			currentType:DataType.UNKNOWN, 
 			showHeader: true, 
+			addUserlink: true
 		};
 		for(let p of preferences) {
 			this.state[p.name] = p.default;
@@ -43,7 +44,7 @@ class ConverterUI extends Component {
 		this.onClickSwitcherHandler = this.onClickSwitcherHandler.bind(this);
 		this.onChangeSettingsHandler = this.onChangeSettingsHandler.bind(this);
 
-		this.converter = new Converter({ showHeader: this.state.showHeader, latinFirst: this.state.latinFirst});
+		this.converter = new Converter({ showHeader: this.state.showHeader, latinFirst: this.state.latinFirst, addUserlink: this.state.addUserlink});
 	}
 
 	copyHandler(e) {
@@ -94,7 +95,7 @@ class ConverterUI extends Component {
 					}
 						</div>
 
-					<Settings handler={this.onChangeSettingsHandler} settings={{showHeader:this.state.showHeader}} />
+						<Settings handler={this.onChangeSettingsHandler} settings={{ showHeader: this.state.showHeader, addUserlink: this.state.addUserlink}} />
 				</div>
 				</main>
 			</div>
