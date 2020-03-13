@@ -119,8 +119,8 @@ class Converter {
 				let match = line.match(regexp);
 				if (!!match) {
 					item.count = match[3];
-					item.title.push(match[1]);
-					item.title.push(match[2]);
+					item.title.push(match[1].trim());
+					item.title.push(match[2].trim());
 					converted += `<tr><td>${item.title[0]}</td><td>${this.#settings.addUserlink ? '@' : ''}${item.title[1]}</td><td>${item.count}</td></tr>\n`;
 				}
 			});
@@ -139,8 +139,8 @@ class Converter {
 				if (!!match) {
 					itemObservations.count = match[3];
 					itemSpecies.count = match[4];
-					itemObservations.title.push(match[1]);
-					itemObservations.title.push(match[2]);
+					itemObservations.title.push(match[1].trim());
+					itemObservations.title.push(match[2].trim());
 					converted += `<tr><td>${itemObservations.title[0]}</td><td>${this.#settings.addUserlink ? '@' : ''}${itemObservations.title[1]}</td><td>${itemObservations.count}</td><td>${itemSpecies.count}</td></tr>\n`;
 				}
 			});
@@ -166,7 +166,7 @@ class Converter {
 				this.lastConvertedType = DataType.UNKNOWN;
 				return '';
 			}
-			
+
 			let convertedType = -1;
 			text.split(/(?:\r?\n){2,}/).forEach(block => {
 				// if (text.contains())
@@ -174,7 +174,7 @@ class Converter {
 
 				if (convertedType > 0 && convertedType!== this.lastConvertedType) convertedType = DataType.Mix;
 				else convertedType = this.lastConvertedType;
-				
+
 				if (this.lastConvertedType !== DataType.Text) converted += "<table class='table table-striped table-hover table-condensed'>\n";
 				switch (this.lastConvertedType) {
 					case DataType.Text:
