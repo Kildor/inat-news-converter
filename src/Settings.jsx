@@ -1,5 +1,6 @@
 import React from 'react';
 import preferences from './preferences.json';
+import Panel from './Panel';
 
 const Setting = (props) => {
 	return (
@@ -10,14 +11,9 @@ const Setting = (props) => {
 	);
 }
 export default ({ handler, settings }) => {
-let s = preferences.map(pref=><Setting key={pref.name} name={pref.name} handler={handler} value={settings[pref.name]} >{pref.title}{pref.note?<><br/><small>{pref.note}</small></>:null}</Setting>);
+	let s = preferences.map(pref => <Setting key={pref.name} name={pref.name} handler={handler} value={settings[pref.name]} >{pref.title}{pref.note?<><br/><small>{pref.note}</small></>:null}</Setting>);
 
-		return (
-			<div className='panel-settings panel'>
-				<header>Настройки конвертера</header>
-				<div className='panel-body'>
-					{s}
-			</div>
-			</div>
-		);
-	};
+	return (<Panel className='panel-settings' title='Настройки конвертера'>
+		{s}
+	</Panel>);
+};

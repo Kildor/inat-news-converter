@@ -57,7 +57,21 @@ main {
             }
           }
         }
+        .collapse-toggler {
+          font-size: .9em;
+          display: inline-block;
+          cursor: pointer;
+        }
+        &.collapsed {
+        .collapse-toggler {
+          transform: rotate(-90deg);
+        }
+          > .panel-body {
+            display: none;
+          }
+        }
       &.panel-settings {
+      
         label {
           display: block;
           font-size: .8em;
