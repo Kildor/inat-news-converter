@@ -1,5 +1,6 @@
 import DataType from './DataType.js';
-import markdown from 'markdown';
+import MarkdownIt from 'markdown-it';
+import MarkdownAttr from 'markdown-it-attrs';
 
 class Item {
 	#count = 0;
@@ -19,8 +20,16 @@ class Item {
 class Converter {
 	lastConvertedType = DataType.UNKNOWN;
 	#settings = { showHeader: true, latinFirst: false, useMarkdown: false, removeDelimeters: false, addUserlink: true};
+
+	markdown = function () { const md = new MarkdownIt({ html: true, breaks: true});
+		md.use(MarkdownAttr);
+		console.dir(md);
+		return md;
+		}();
+
 	constructor(settings) {
 		this.#settings = Object.assign(this.#settings,settings);
+
 	}
 
 	newItem() {
@@ -152,11 +161,12 @@ class Converter {
 		if (text.indexOf('\'') === 0) text = text.substr(1, text.length).trim();
 		if (text.length === 0) return '';
 		if (this.#settings.useMarkdown) {
-			converted = markdown.parse(text);
+			// console.dir(this.markdown);
+			converted = this.markdown.render(text);
 		} else {
 			converted = '<p>' + text + '</p>'
 		}
-		converted = converted.split('\n').join('<br/>\n');
+		// converted = converted.split('\n').join('<br/>\n');
 		return converted + '\n';
 	}
 		convert = (text) => {

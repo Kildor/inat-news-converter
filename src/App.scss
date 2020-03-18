@@ -127,6 +127,81 @@ main {
       div.settings {
         text-align: left;
       }
+
+      .btn-help {
+        position: absolute;
+        bottom: .7em;
+        right: .7em;
+        font-size: 1.2em;
+        font-weight: bold;
+        line-height: 1.2;
+        text-align: center;
+        width: 2em;
+        border-radius: 5px;
+        border:1px solid #ddd;
+        background: #eee linear-gradient(to bottom, #fafafa, #eee);
+        box-shadow: 1px 1px  rgba(#000,.4);
+        cursor: help;
+      }
+      .popup-help {
+        position: fixed;
+        top:2vmax;
+        left: 2vmax;
+        right: 2vmax;
+        bottom: 2vmax;
+        z-index: 100;
+        background: #eee linear-gradient(to bottom, #fafafa, #eee);
+        box-shadow: 1px 1px  rgba(#000,.4),
+        -1px -1px  rgba(#fff,.4);
+        display: none;
+        text-align: left;
+        overflow: hidden;
+        flex-direction: column;
+        header {
+          padding: .5em;
+          text-align: center;
+          font-size: 1.5em;
+          font-weight: bold;
+        .btn-close {
+          float: right;
+          background: transparent;
+          border:none;
+          font-size: 2em;
+          line-height: .5;
+          cursor: pointer;
+          transform: rotate(45deg);          
+          outline: 0;
+        }
+        }
+        .popup-body {
+          background-color: #fff;
+          padding: 1em;
+          margin: 0 1em 1em 1em;
+          max-height: 100%;
+          overflow: auto;
+        }
+      }
+      .popup-bg {
+        position: fixed;
+        top:0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 90;
+        display: none;
+        background:rgba(#000,.4);
+        cursor: pointer;
+      }
+      .btn-help.active {
+        & + .popup-help{
+          display: flex;
+        }
+        & + .popup-help + .popup-bg {
+          display: block;
+        } 
+
+      }
+
       .btn-copy {
         position: absolute;
         bottom: 1em;

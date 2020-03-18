@@ -4,6 +4,7 @@ import Settings from './Settings';
  import Converter from './Converter';
 import DataType from './DataType';
 import Header from './Header';
+import Help from './Help';
 import Panel from './Panel';
 import preferences from './preferences.json';
 import './App.scss';
@@ -16,7 +17,7 @@ import './App.scss';
 		 { key: DataType.Text, title: 'Текст (разбиение на абзацы).', note: 'Если скрипт неверно разбирает строку, начните её со знака «\'»'},
 		 { key: DataType.Mix, title: 'Смешанные данные (разделённые двумя переносами строки)'},
 	 ];
-	 
+
 	 return <Panel title='Поддерживаемые варианты данных' className='panel-notes'>
 		 <ul>{types.map(type => <li className={type.key === props.currentType ? "active" : null} key={type.key}>{type.title}{!!type.note ? <small>{type.note}</small> : null}</li>)}</ul>
 	 </Panel>
@@ -78,8 +79,11 @@ class ConverterUI extends Component {
 				<Header clickHandler={this.onClickSwitcherHandler} isHTML={this.state.html} />
 				<main>
 				<div className='in-wp'>
+						<div className='wrapper'>
 					<textarea className='in' autoFocus onChange={this.onChangeHandler} ref={(el) => { this.areaIn = el; }} 
 					defaultValue={this.props.text}/>
+					<Help/>
+				</div>
 					<Notes currentType={this.state.currentType}/>
 				</div>
 				<div className={this.state.html?'html':'textarea'}>
