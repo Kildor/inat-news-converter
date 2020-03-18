@@ -65,6 +65,9 @@ class Converter {
 			let converted = '';
 			let items = [];
 			let item = null;
+			let index = 1;
+			let colNames = ['Проект', 'Количество'];
+			if (this.#settings.addSubProjectCounter) colNames.unshift('Место');
 			const regexpCount = /^[0-9 ,.]+$/;
 			text.split('\n').forEach(line => {
 				line = line.trim();
@@ -73,14 +76,17 @@ class Converter {
 					item = this.newItem();
 					item.count = line;
 				}
-				else if (item !== null)
+				else if (item !== null) {
 					item.title.push(line);
+					item.title.push(index++);
+
+				}
 			});
 			if (item !== null) items.push(item);
 
 			if (items.length > 0) {
-				converted += this.writeTableHeader(['Проект', 'Количество']);
-				items.forEach(item => converted += `<tr><td>${item.title[0]}</td><td>${item.count}</td></tr>\n`);
+				converted += this.writeTableHeader(colNames);
+				items.forEach(item => converted += `<tr>${this.#settings.addCounter ? '<td>'+item.title[1]+'</td>':''}<td>${item.title[0]}</td><td>${item.count}</td></tr>\n`);
 				}
 			return converted;
 		}
@@ -88,23 +94,32 @@ class Converter {
 			let converted = '';
 			let items = [];
 			let item = null;
+			let index = 1;
+			let colNames = ['Вид', 'Количество наблюдений'];
+			if (this.#settings.addCounter) colNames.unshift('Место');
+
 			const regexpCount = /^[A-Z]*([0-9]+)\s.+$/;
 			text.split('\n').forEach(line => {
 				line = line.trim();
 				let match = line.match(regexpCount);
 				if (!!match) {
-					if (item != null) items.push(item);
+					if (item != null) {
+						item.title.push(index++);
+						items.push(item);
+					}
 					item = this.newItem();
 					item.count = match[1];
 				}
 				else if (item !==null)
 					item.title.push(line);
 			});
-			if (item!==null) items.push(item);
+			if (item!==null) {
+				item.title.push(index++);
+				items.push(item);
+			}
 
 			if (items.length > 0) {
-				converted += this.writeTableHeader(['Вид', 'Количество наблюдений']);
-
+				converted += this.writeTableHeader(colNames);
 				items.forEach(item => {
 					let title = '';
 					if (item.title.length === 1) {
@@ -119,7 +134,7 @@ class Converter {
 							title = `${item.title[0]} <em>(${item.title[1]})</em>`;
 						}
 					}
-					converted += `<tr><td>${title}</td><td>${item.count}</td></tr>\n`}
+					converted += `<tr>${this.#settings.addCounter ? '<td>' + item.title[2] + '</td>' : ''}<td>${title}</td><td>${item.count}</td></tr>\n`}
 					);
 				}
 			return converted;

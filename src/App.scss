@@ -38,6 +38,14 @@ main {
         font-weight: bold;
         font-size: 1.1em;
       }
+      small {
+        display: block;
+        font-style: italic;
+        padding-left: 1em;
+        line-height: 1.2;
+        font-size: 75%;
+        }
+
         ul {
           list-style: none;
           padding: 0 0 0 1em;
@@ -49,11 +57,6 @@ main {
           li {
             &.active {
               font-weight: bold;
-            }
-            small {
-              display: block;
-              margin-left: 1em;
-              font-style: italic;
             }
           }
         }
@@ -67,20 +70,14 @@ main {
           transform: rotate(-90deg);
         }
           > .panel-body {
-            display: none;
+            display: none !important;
           }
         }
       &.panel-settings {
-      
         label {
           display: block;
           font-size: .8em;
           margin-bottom: .5em;
-          small {
-            display: block;
-            font-style: italic;
-            padding-left: 1em;
-          }
         }
       }
     }

@@ -11,5 +11,9 @@
 		"default": false},
 	{"name":"addUserlink", 
 		"title": "Добавлять @ перед именем пользователя",
+		"default": true},
+	{"name":"addCounter",
+		"title": "Добавлять позицию подпроекта или вида в списке",
 		"default": true}
+
 ]
