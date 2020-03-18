@@ -125,6 +125,24 @@ main {
         text-align: left;
       }
 
+      .btn-clear {
+        position: absolute;
+        top: .7em;
+        right: .7em;
+        font-size: .8em;
+        font-weight: bold;
+        line-height: 1.2;
+        text-align: center;
+        // width: 2em;
+        border-radius: 5px;
+        border:1px solid #ddd;
+        background: #eee linear-gradient(to bottom, #fafafa, #eee);
+        box-shadow: 1px 1px  rgba(#000,.4);
+        cursor: pointer;
+        padding: 2px 5px;
+
+      }
+
       .btn-help {
         position: absolute;
         bottom: .7em;

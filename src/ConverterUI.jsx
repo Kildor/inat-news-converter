@@ -43,6 +43,7 @@ class ConverterUI extends Component {
 		this.copyHandler = this.copyHandler.bind(this);
 		this.onClickSwitcherHandler = this.onClickSwitcherHandler.bind(this);
 		this.onChangeSettingsHandler = this.onChangeSettingsHandler.bind(this);
+		this.onClearHandler = this.onClearHandler.bind(this);
 
 		this.converter = new Converter(this.state.settings);
 	}
@@ -54,10 +55,14 @@ class ConverterUI extends Component {
 			}, 5000)
 	}
 	onChangeHandler (e) {
-		this.setState({ value: this.converter.convert(e.target.value), currentType: this.converter.lastConvertedType,copied:false });
+		this.setState({ value: this.converter.convert(this.areaIn.value), currentType: this.converter.lastConvertedType,copied:false });
 	}
 	onClickSwitcherHandler (e) {
-		this.setState({html: !this.state.html});	
+		this.setState({html: !this.state.html});
+	}
+	onClearHandler (e) {
+		this.areaIn.value = '';
+		this.onChangeHandler(e);
 	}
 
 	onChangeSettingsHandler (e) {
@@ -83,6 +88,7 @@ class ConverterUI extends Component {
 					<textarea className='in' autoFocus onChange={this.onChangeHandler} ref={(el) => { this.areaIn = el; }} 
 					defaultValue={this.props.text}/>
 					<Help/>
+							<button className='btn-clear' onClick={this.onClearHandler} title='Clear'><span role='img' aria-label='Clear'>❌</span></button>
 				</div>
 					<Notes currentType={this.state.currentType}/>
 				</div>
