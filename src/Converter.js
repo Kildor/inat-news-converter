@@ -1,6 +1,7 @@
 import DataType from './DataType.js';
 import MarkdownIt from 'markdown-it';
 import MarkdownAttr from 'markdown-it-attrs';
+import defaultPreferences from './preferences.json';
 
 class Item {
 	#count = 0;
@@ -19,11 +20,16 @@ class Item {
 }
 class Converter {
 	lastConvertedType = DataType.UNKNOWN;
-	#settings = { showHeader: true, latinFirst: false, useMarkdown: false, removeDelimeters: false, addUserlink: true};
+	#settings = function() {
+		let prefs = {};
+		defaultPreferences.forEach(element => {
+			prefs[element.name]=element.default
+		});
+		return prefs;
+	}();
 
 	markdown = function () { const md = new MarkdownIt({ html: true, breaks: true});
 		md.use(MarkdownAttr);
-		console.dir(md);
 		return md;
 		}();
 

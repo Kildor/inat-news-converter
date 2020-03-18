@@ -30,21 +30,21 @@ class ConverterUI extends Component {
 	}
 	constructor(props) {
 		super(props);
-		this.state = {value: "", 
+		this.state = {
+			value: "", 
 			html: true, 
-			currentType:DataType.UNKNOWN, 
-			showHeader: true, 
-			addUserlink: true
+			currentType: DataType.UNKNOWN,
+			settings: {}
 		};
 		for(let p of preferences) {
-			this.state[p.name] = p.default;
+			this.state.settings[p.name] = p.default;
 		}
 		this.onChangeHandler = this.onChangeHandler.bind(this);
 		this.copyHandler = this.copyHandler.bind(this);
 		this.onClickSwitcherHandler = this.onClickSwitcherHandler.bind(this);
 		this.onChangeSettingsHandler = this.onChangeSettingsHandler.bind(this);
 
-		this.converter = new Converter({ showHeader: this.state.showHeader, latinFirst: this.state.latinFirst, addUserlink: this.state.addUserlink});
+		this.converter = new Converter(this.state.settings);
 	}
 
 	copyHandler(e) {
@@ -61,9 +61,9 @@ class ConverterUI extends Component {
 	}
 
 	onChangeSettingsHandler (e) {
-		let newSettings = {};
+		let newSettings = this.state.settings;
 		newSettings[e.target.name]=e.target.checked;
-		this.setState(newSettings);
+		this.setState({settings: newSettings});
 		this.converter.updateSettings(newSettings);
 		this.setState({ value: this.converter.convert(this.areaIn.value)});	
 
@@ -98,7 +98,7 @@ class ConverterUI extends Component {
 					}
 						</div>
 
-						<Settings handler={this.onChangeSettingsHandler} settings={{ showHeader: this.state.showHeader, addUserlink: this.state.addUserlink}} />
+						<Settings handler={this.onChangeSettingsHandler} settings={this.state.settings} />
 				</div>
 				</main>
 			</div>
