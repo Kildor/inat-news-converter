@@ -15,11 +15,11 @@ import './App.scss';
 		 { key: DataType.Species, title: 'Виды проекта'},
 		 { key: DataType.Subprojects, title: 'Подпроекты зонтичного проекта'},
 		 { key: DataType.Text, title: 'Текст (разбиение на абзацы).', note: 'Если скрипт неверно разбирает строку, начните её со знака «\'»'},
-		 { key: DataType.Mix, title: 'Смешанные данные (разделённые двумя переносами строки)'},
+		 { key: DataType.Mixed, title: 'Смешанные данные (разделённые двумя переносами строки)'},
 	 ];
 
 	 return <Panel title='Поддерживаемые варианты данных' className='panel-notes'>
-		 <ul>{types.map(type => <li className={type.key === props.currentType ? "active" : null} key={type.key}>{type.title}{!!type.note ? <small>{type.note}</small> : null}</li>)}</ul>
+		 <ul>{types.map(type => <li className={type.key === props.currentType ? "active" : null} key={type.key}>{type.title} {type.key < 5 && <var>!({type.key})</var>}{!!type.note ? <small>{type.note}</small> : null}</li>)}</ul>
 	 </Panel>
  }
 
@@ -88,7 +88,7 @@ class ConverterUI extends Component {
 					<textarea className='in' autoFocus onChange={this.onChangeHandler} ref={(el) => { this.areaIn = el; }} 
 					defaultValue={this.props.text}/>
 					<Help/>
-							<button className='btn-clear' onClick={this.onClearHandler} title='Clear'><span role='img' aria-label='Clear'>❌</span></button>
+					<button className='btn-clear' onClick={this.onClearHandler} title='Clear'><span role='img' aria-label='Clear'>❌</span></button>
 				</div>
 					<Notes currentType={this.state.currentType}/>
 				</div>

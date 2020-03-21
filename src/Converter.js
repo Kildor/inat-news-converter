@@ -4,19 +4,27 @@ import MarkdownAttr from 'markdown-it-attrs';
 import defaultPreferences from './preferences.json';
 
 class Item {
-	#count = 0;
+	#count = [];
 	title = [];
 	removeDelimeters = false;
 	constructor(removeDelimeters) {
 		this.removeDelimeters = removeDelimeters;
 	}
 	get count() {
+		if (this.#count.length === 0) this.#count.push(0);
 		if (!this.removeDelimeters) return this.#count;
-		return this.#count.replace(/[\D]/g,'');
+		return this.#count.map(count => count.replace(/[\D]/g, ''));
 	}
 	set count(value) {
-		this.#count = value;
+		if (typeof value === 'string') this.#count.push(value);
+		else this.#count = value ;
 	}
+	
+	setCount(index, value) {
+		this.#count[index]=value;
+	}
+
+
 }
 class Converter {
 	lastConvertedType = DataType.UNKNOWN;
@@ -67,7 +75,7 @@ class Converter {
 			let item = null;
 			let index = 1;
 			let colNames = ['Проект', 'Количество'];
-			if (this.#settings.addSubProjectCounter) colNames.unshift('Место');
+			if (this.#settings.addSubProjectCounter) colNames.unshift('Позиция');
 			const regexpCount = /^[0-9 ,.]+$/;
 			text.split('\n').forEach(line => {
 				line = line.trim();
@@ -86,7 +94,7 @@ class Converter {
 
 			if (items.length > 0) {
 				converted += this.writeTableHeader(colNames);
-				items.forEach(item => converted += `<tr>${this.#settings.addCounter ? '<td>'+item.title[1]+'</td>':''}<td>${item.title[0]}</td><td>${item.count}</td></tr>\n`);
+				items.forEach(item => converted += `<tr>${this.#settings.addCounter ? '<td>'+item.title[1]+'</td>':''}<td>${item.title[0]}</td><td>${item.count[0]}</td></tr>\n`);
 				}
 			return converted;
 		}
@@ -96,7 +104,7 @@ class Converter {
 			let item = null;
 			let index = 1;
 			let colNames = ['Вид', 'Количество наблюдений'];
-			if (this.#settings.addCounter) colNames.unshift('Место');
+			if (this.#settings.addCounter) colNames.unshift('Позиция');
 
 			const regexpCount = /^[A-Z]*([0-9]+)\s.+$/;
 			text.split('\n').forEach(line => {
@@ -134,7 +142,7 @@ class Converter {
 							title = `${item.title[0]} <em>(${item.title[1]})</em>`;
 						}
 					}
-					converted += `<tr>${this.#settings.addCounter ? '<td>' + item.title[2] + '</td>' : ''}<td>${title}</td><td>${item.count}</td></tr>\n`}
+					converted += `<tr>${this.#settings.addCounter ? '<td>' + item.title[2] + '</td>' : ''}<td>${title}</td><td>${item.count[0]}</td></tr>\n`}
 					);
 				}
 			return converted;
@@ -151,7 +159,7 @@ class Converter {
 					item.count = match[3];
 					item.title.push(match[1].trim());
 					item.title.push(match[2].trim());
-					converted += `<tr><td>${item.title[0]}</td><td>${this.#settings.addUserlink ? '@' : ''}${item.title[1]}</td><td>${item.count}</td></tr>\n`;
+					converted += `<tr><td>${item.title[0]}</td><td>${this.#settings.addUserlink ? '@' : ''}${item.title[1]}</td><td>${item.count[0]}</td></tr>\n`;
 				}
 			});
 			return converted;
@@ -164,14 +172,13 @@ class Converter {
 			text.split('\n').forEach(line => {
 				if (/^\D+\t/.test(line)) return;
 				let itemObservations = this.newItem();
-				let itemSpecies = this.newItem();
 				let match = line.match(regexp);
 				if (!!match) {
 					itemObservations.count = match[3];
-					itemSpecies.count = match[4];
+					itemObservations.count = match[4];
 					itemObservations.title.push(match[1].trim());
 					itemObservations.title.push(match[2].trim());
-					converted += `<tr><td>${itemObservations.title[0]}</td><td>${this.#settings.addUserlink ? '@' : ''}${itemObservations.title[1]}</td><td>${itemObservations.count}</td><td>${itemSpecies.count}</td></tr>\n`;
+					converted += `<tr><td>${itemObservations.title[0]}</td><td>${this.#settings.addUserlink ? '@' : ''}${itemObservations.title[1]}</td><td>${itemObservations.count[0]}</td><td>${itemObservations.count[1]}</td></tr>\n`;
 				}
 			});
 			return converted;
@@ -182,12 +189,10 @@ class Converter {
 		if (text.indexOf('\'') === 0) text = text.substr(1, text.length).trim();
 		if (text.length === 0) return '';
 		if (this.#settings.useMarkdown) {
-			// console.dir(this.markdown);
 			converted = this.markdown.render(text);
 		} else {
 			converted = '<p>' + text + '</p>'
 		}
-		// converted = converted.split('\n').join('<br/>\n');
 		return converted + '\n';
 	}
 		convert = (text) => {
@@ -200,10 +205,9 @@ class Converter {
 
 			let convertedType = -1;
 			text.split(/(?:\r?\n){2,}/).forEach(block => {
-				// if (text.contains())
 				this.lastConvertedType = this.checkType(block);
 
-				if (convertedType > 0 && convertedType!== this.lastConvertedType) convertedType = DataType.Mix;
+				if (convertedType > 0 && convertedType!== this.lastConvertedType) convertedType = DataType.Mixed;
 				else convertedType = this.lastConvertedType;
 
 				if (this.lastConvertedType !== DataType.Text) converted += "<table class='table table-striped table-hover table-condensed'>\n";
