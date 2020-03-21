@@ -75,7 +75,7 @@ class Converter {
 			let item = null;
 			let index = 1;
 			let colNames = ['Проект', 'Количество'];
-			if (this.#settings.addSubProjectCounter) colNames.unshift('Позиция');
+			if (this.#settings.addCounter) colNames.unshift('Позиция');
 			const regexpCount = /^[0-9 ,.]+$/;
 			text.split('\n').forEach(line => {
 				line = line.trim();
