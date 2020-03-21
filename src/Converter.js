@@ -63,7 +63,7 @@ class Converter {
 				return DataType.Experts;
 			else if (/^\s*[\d ,]+\s*$/.test(firstLine))
 				return DataType.Subprojects;
-			else if (/^\s*[\d ,]+\s.+$/.test(firstLine))
+			else if (/^\s*[A-Z]?[\d ,]+\s.+$/.test(firstLine))
 				return DataType.Species;
 			else
 				return DataType.Text;
@@ -214,29 +214,30 @@ class Converter {
 				if (convertedType > 0 && convertedType!== this.lastConvertedType) convertedType = DataType.Mixed;
 				else convertedType = this.lastConvertedType;
 
-				if (this.lastConvertedType !== DataType.Text) converted += "<table class='table table-striped table-hover table-condensed'>\n";
-				switch (this.lastConvertedType) {
-					case DataType.Text:
-						converted += this.convertText(block);
-						break;
-					case DataType.Observers:
-						converted += this.convertObservers(block);
-						break;
-					case DataType.Experts:
-						converted += this.convertExperts(block);
-						break;
-					case DataType.Subprojects:
-						converted += this.convertSubProjects(block);
-						break;
-					case DataType.Species:
-						converted += this.convertSpecies(block);
-						break;
-					case DataType.UNKNOWN:
-					default:
-						converted += '<tr><td>Неизвестный вариант</td></tr/>';
-						break;
+				if (this.lastConvertedType === DataType.Text) {
+					converted += this.convertText(block);
+				} else {
+					converted += "<table class='table table-striped table-hover table-condensed'>\n";
+					switch (this.lastConvertedType) {
+						case DataType.Observers:
+							converted += this.convertObservers(block);
+							break;
+						case DataType.Experts:
+							converted += this.convertExperts(block);
+							break;
+						case DataType.Subprojects:
+							converted += this.convertSubProjects(block);
+							break;
+						case DataType.Species:
+							converted += this.convertSpecies(block);
+							break;
+						case DataType.UNKNOWN:
+						default:
+							converted += '<tr><td>Неизвестный вариант</td></tr/>';
+							break;
+					}
+					converted += '</table>\n';
 				}
-				if (this.lastConvertedType !== DataType.Text) converted += '</table>\n';
 			});
 			this.lastConvertedType = convertedType;
 		converted.replace(/(\/t[dh]>)(<t[dh])/g, '$1 $2');
