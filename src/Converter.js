@@ -26,6 +26,7 @@ class Item {
 
 
 }
+
 class Converter {
 	lastConvertedType = DataType.UNKNOWN;
 	#settings = function() {
@@ -43,7 +44,6 @@ class Converter {
 
 	constructor(settings) {
 		this.#settings = Object.assign(this.#settings,settings);
-
 	}
 
 	newItem() {
@@ -94,7 +94,7 @@ class Converter {
 
 			if (items.length > 0) {
 				converted += this.writeTableHeader(colNames);
-				items.forEach(item => converted += `<tr>${this.#settings.addCounter ? '<td>'+item.title[1]+'</td>':''}<td>${item.title[0]}</td><td>${item.count[0]}</td></tr>\n`);
+				items.forEach(item => converted += `<tr>${this.#settings.addCounter ? '<td>'+item.title[1]+'</td>':''}<td>${item.title[0]}</td><td>sometestsstring${item.count[0]}</td></tr>\n`);
 				}
 			return converted;
 		}
@@ -105,8 +105,8 @@ class Converter {
 			let index = 1;
 			let colNames = ['Вид', 'Количество наблюдений'];
 			if (this.#settings.addCounter) colNames.unshift('Позиция');
+			const regexpCount = /^[A-Z]*([0-9 ,.]+)\s.+$/;
 
-			const regexpCount = /^[A-Z]*([0-9]+)\s.+$/;
 			text.split('\n').forEach(line => {
 				line = line.trim();
 				let match = line.match(regexpCount);
@@ -171,14 +171,14 @@ class Converter {
 			converted += this.writeTableHeader(['Место', 'Наблюдатель', 'Наблюдений','Видов']);
 			text.split('\n').forEach(line => {
 				if (/^\D+\t/.test(line)) return;
-				let itemObservations = this.newItem();
+				let item = this.newItem();
 				let match = line.match(regexp);
 				if (!!match) {
-					itemObservations.count = match[3];
-					itemObservations.count = match[4];
-					itemObservations.title.push(match[1].trim());
-					itemObservations.title.push(match[2].trim());
-					converted += `<tr><td>${itemObservations.title[0]}</td><td>${this.#settings.addUserlink ? '@' : ''}${itemObservations.title[1]}</td><td>${itemObservations.count[0]}</td><td>${itemObservations.count[1]}</td></tr>\n`;
+					item.count = match[3];
+					item.count = match[4];
+					item.title.push(match[1].trim());
+					item.title.push(match[2].trim());
+					converted += `<tr><td>${item.title[0]}</td><td>${this.#settings.addUserlink ? '@' : ''}${item.title[1]}</td><td>${item.count[0]}</td><td>${item.count[1]}</td></tr>\n`;
 				}
 			});
 			return converted;
