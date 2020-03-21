@@ -52,7 +52,11 @@ class Converter {
 
 	checkType(text) {
 			let firstLine = text.substr(0, text.indexOf('\n')).trim();
-			if (firstLine.indexOf('\'') === 0 ) return DataType.Text;
+
+			if (firstLine.indexOf('\'') === 0)
+				return DataType.Text;
+			else if (/^!\(([1-4])/.test(firstLine)) // !(type[!!colname!!colname ...])
+				return parseInt(firstLine.match(/^!\(([1-4])/)[1]);
 			else if (/^(.+)\t(.+)\t(.+)\t(.+)$/.test(firstLine))
 				return DataType.Observers;
 			else if (/^(.+)\t(.+)\t(.+)$/.test(firstLine))
@@ -94,7 +98,7 @@ class Converter {
 
 			if (items.length > 0) {
 				converted += this.writeTableHeader(colNames);
-				items.forEach(item => converted += `<tr>${this.#settings.addCounter ? '<td>'+item.title[1]+'</td>':''}<td>${item.title[0]}</td><td>sometestsstring${item.count[0]}</td></tr>\n`);
+				items.forEach(item => converted += `<tr>${this.#settings.addCounter ? '<td>'+item.title[1]+'</td>':''}<td>${item.title[0]}</td><td>${item.count[0]}</td></tr>\n`);
 				}
 			return converted;
 		}
