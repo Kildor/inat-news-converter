@@ -19,7 +19,7 @@ import './App.scss';
 	 ];
 
 	 return <Panel title='Поддерживаемые варианты данных' className='panel-notes'>
-		 <ul>{types.map(type => <li className={type.key === props.currentType ? "active" : null} key={type.key}>{type.title} {type.key < 5 && <var>!({type.key})</var>}{!!type.note ? <small>{type.note}</small> : null}</li>)}</ul>
+		 <ul>{types.map(type => <li className={type.key === props.currentType ? "active" : null} key={type.key}>{type.title} {type.key < 5 && <var>!({type.key})</var>}{!!type.note && <small>{type.note}</small>}</li>)}</ul>
 	 </Panel>
  }
 
