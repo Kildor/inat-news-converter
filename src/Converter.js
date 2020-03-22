@@ -55,7 +55,7 @@ class Converter {
 
 			if (firstLine.indexOf('\'') === 0)
 				return DataType.Text;
-			else if (/^!\(([1-4])/.test(firstLine)) // !(type[!!colname!!colname ...])
+			else if (/^!\(\s*([1-4]\s*)/.test(firstLine)) // !(type [!! colname !! colname ...])
 				return parseInt(firstLine.match(/^!\(([1-4])/)[1]);
 			else if (/^(.+)\t(.+)\t(.+)\t(.+)$/.test(firstLine))
 				return DataType.Observers;
@@ -69,17 +69,48 @@ class Converter {
 				return DataType.Text;
 		};
 
-		writeTableHeader(fields) {
-			if (!this.#settings.showHeader) return '';
-			return `<thead><tr><th>${fields.join('</th><th>')}</th></tr></thead>`;
+		writeTableHeader(text) {
+			if (this.#settings.showHeader) {
+				let firstLine = text.substr(0, text.indexOf('\n')).trim();
+				let match = firstLine.match(/^!\(\d\s*!!(.+)(?=!!)?\)$/);
+
+				let names = [];
+
+				if (match) {
+					names = match[1].trim().split(/\s*!!\s*/)
+				} else {
+					names = this.takeDefaultNames();
+				}
+				if (names.length > 0) return `<thead><tr><th>${names.join('</th><th>')}</th></tr></thead>`;
+			}
+			return '';
+		
 		}
+	takeDefaultNames() {
+		switch(this.lastConvertedType) {
+			case DataType.Species:
+				var names = ['Позиция','Вид', 'Количество наблюдений'];
+				break;
+			case DataType.Subprojects:
+				names = ['Позиция', 'Проект', 'Количество'];
+				break;
+			case DataType.Experts:
+				names = ['Место', 'Эксперт', 'Идентификаций'];
+				break;
+			case DataType.Observers:
+				names = ['Место', 'Наблюдатель', 'Наблюдений', 'Видов'];
+				break;
+			default:
+				return [];
+			}
+			if (!this.#settings.addCounter) names.shift();
+			return names;
+	}
 		convertSubProjects = (text) => {
 			let converted = '';
 			let items = [];
 			let item = null;
-			let index = 1;
-			let colNames = ['Проект', 'Количество'];
-			if (this.#settings.addCounter) colNames.unshift('Позиция');
+			let position = 1;
 			const regexpCount = /^[0-9 ,.]+$/;
 			text.split('\n').forEach(line => {
 				line = line.trim();
@@ -90,25 +121,23 @@ class Converter {
 				}
 				else if (item !== null) {
 					item.title.push(line);
-					item.title.push(index++);
+					item.title.push(position++);
 
 				}
 			});
 			if (item !== null) items.push(item);
 
 			if (items.length > 0) {
-				converted += this.writeTableHeader(colNames);
 				items.forEach(item => converted += `<tr>${this.#settings.addCounter ? '<td>'+item.title[1]+'</td>':''}<td>${item.title[0]}</td><td>${item.count[0]}</td></tr>\n`);
 				}
 			return converted;
 		}
+
 		convertSpecies = (text) => {
 			let converted = '';
 			let items = [];
 			let item = null;
-			let index = 1;
-			let colNames = ['Вид', 'Количество наблюдений'];
-			if (this.#settings.addCounter) colNames.unshift('Позиция');
+			let position = 1;
 			const regexpCount = /^[A-Z]*([0-9 ,.]+)\s.+$/;
 
 			text.split('\n').forEach(line => {
@@ -116,7 +145,7 @@ class Converter {
 				let match = line.match(regexpCount);
 				if (!!match) {
 					if (item != null) {
-						item.title.push(index++);
+						item.title.push(position++);
 						items.push(item);
 					}
 					item = this.newItem();
@@ -126,12 +155,11 @@ class Converter {
 					item.title.push(line);
 			});
 			if (item!==null) {
-				item.title.push(index++);
+				item.title.push(position++);
 				items.push(item);
 			}
 
 			if (items.length > 0) {
-				converted += this.writeTableHeader(colNames);
 				items.forEach(item => {
 					let title = '';
 					if (item.title.length === 1) {
@@ -154,7 +182,6 @@ class Converter {
 		convertExperts(text) {
 			let converted = '';
 			const regexp = /^(.+)\t(.+)\t(.+)$/;
-			converted += this.writeTableHeader(['Место', 'Эксперт', 'Идентификаций']);
 			text.split('\n').forEach(line => {
 				if (/^\D+\t/.test(line)) return;
 				let item = this.newItem();
@@ -163,7 +190,7 @@ class Converter {
 					item.count = match[3];
 					item.title.push(match[1].trim());
 					item.title.push(match[2].trim());
-					converted += `<tr><td>${item.title[0]}</td><td>${this.#settings.addUserlink ? '@' : ''}${item.title[1]}</td><td>${item.count[0]}</td></tr>\n`;
+					converted += `<tr>${this.#settings.addCounter ? `<td>${item.title[0]}</td>` : ''}<td>${this.#settings.addUserlink ? '@' : ''}${item.title[1]}</td><td>${item.count[0]}</td></tr>\n`;
 				}
 			});
 			return converted;
@@ -172,7 +199,6 @@ class Converter {
 		convertObservers(text) {
 			let converted = '';
 			const regexp = /^(.+)\t(.+)\t(.+)\t(.+)$/;
-			converted += this.writeTableHeader(['Место', 'Наблюдатель', 'Наблюдений','Видов']);
 			text.split('\n').forEach(line => {
 				if (/^\D+\t/.test(line)) return;
 				let item = this.newItem();
@@ -182,7 +208,7 @@ class Converter {
 					item.count = match[4];
 					item.title.push(match[1].trim());
 					item.title.push(match[2].trim());
-					converted += `<tr><td>${item.title[0]}</td><td>${this.#settings.addUserlink ? '@' : ''}${item.title[1]}</td><td>${item.count[0]}</td><td>${item.count[1]}</td></tr>\n`;
+					converted += `<tr>${this.#settings.addCounter ? `<td>${item.title[0]}</td>` : ''}<td>${this.#settings.addUserlink ? '@' : ''}${item.title[1]}</td><td>${item.count[0]}</td><td>${item.count[1]}</td></tr>\n`;
 				}
 			});
 			return converted;
@@ -199,6 +225,7 @@ class Converter {
 		}
 		return converted + '\n';
 	}
+	
 		convert = (text) => {
 			let converted = '';
 			text = text.trim();
@@ -218,6 +245,7 @@ class Converter {
 					converted += this.convertText(block);
 				} else {
 					converted += "<table class='table table-striped table-hover table-condensed'>\n";
+					converted += this.writeTableHeader(text);
 					switch (this.lastConvertedType) {
 						case DataType.Observers:
 							converted += this.convertObservers(block);
@@ -233,7 +261,7 @@ class Converter {
 							break;
 						case DataType.UNKNOWN:
 						default:
-							converted += '<tr><td>Неизвестный вариант</td></tr/>';
+							converted += '<tr><td>Неизвестный вариант</td></tr>';
 							break;
 					}
 					converted += '</table>\n';
