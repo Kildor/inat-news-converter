@@ -4,6 +4,7 @@ export default Object.freeze({
 	Experts: 2,
 	Subprojects: 3,
 	Species: 4,
-	Mixed: 5,
-	Text: 6,
+	Summary: 5,
+	Mixed: 6,
+	Text: 7,
 });

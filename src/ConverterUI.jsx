@@ -14,6 +14,7 @@ import './App.scss';
 		 { key: DataType.Experts, title: 'Эксперты проекта'},
 		 { key: DataType.Species, title: 'Виды проекта'},
 		 { key: DataType.Subprojects, title: 'Подпроекты зонтичного проекта'},
+		 { key: DataType.Summary, title: 'Обзорные данные проекта'},
 		 { key: DataType.Text, title: 'Текст (разбиение на абзацы).', note: 'Если скрипт неверно разбирает строку, начните её со знака «\'»'},
 		 { key: DataType.Mixed, title: 'Смешанные данные (разделённые двумя переносами строки)'},
 	 ];
@@ -55,6 +56,7 @@ class ConverterUI extends Component {
 			}, 5000)
 	}
 	onChangeHandler (e) {
+		this.areaIn.value = this.areaIn.value.replace(/\r/g,'');
 		this.setState({ value: this.converter.convert(this.areaIn.value), currentType: this.converter.lastConvertedType,copied:false });
 	}
 	onClickSwitcherHandler (e) {
@@ -99,7 +101,11 @@ class ConverterUI extends Component {
 					/>
 					<div className='html' dangerouslySetInnerHTML={this.showHTML()} />
 						{navigator.clipboard && this.state.value.length > 0 ? 
-						<button onClick={this.copyHandler} className={"btn-copy" + (this.state.copied ? ' success' : '')}><span className='success-mark'>✔</span> {(this.state.copied ? 'Copied' : 'Copy')}</button>
+						<button
+							onClick={this.copyHandler} 
+							title="Не забудьте выбрать 'Ничего' в настройке 'Форматирование'" 
+							className={"btn-copy" + (this.state.copied ? ' success' : '')}
+							><span className='success-mark'>✔</span> {(this.state.copied ? 'Copied' : 'Copy')}</button>
 						: null
 					}
 						</div>

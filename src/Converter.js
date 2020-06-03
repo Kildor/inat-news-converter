@@ -6,6 +6,7 @@ import defaultPreferences from './preferences.json';
 class Item {
 	#count = [];
 	title = [];
+	position = 0;
 	removeDelimeters = false;
 	constructor(removeDelimeters) {
 		this.removeDelimeters = removeDelimeters;
@@ -55,8 +56,8 @@ class Converter {
 
 			if (firstLine.indexOf('\'') === 0)
 				return DataType.Text;
-			else if (/^!\(\s*([1-4]\s*)/.test(firstLine)) // !(type [!! colname !! colname ...])
-				return parseInt(firstLine.match(/^!\(([1-4])/)[1]);
+			else if (/^!\(\s*([\d]\s*)/.test(firstLine)) // !(type [!! colname !! colname ...])
+				return parseInt(firstLine.match(/^!\(([\d])/)[1]);
 			else if (/^(.+)\t(.+)\t(.+)\t(.+)$/.test(firstLine))
 				return DataType.Observers;
 			else if (/^(.+)\t(.+)\t(.+)$/.test(firstLine))
@@ -100,6 +101,9 @@ class Converter {
 			case DataType.Observers:
 				names = ['Место', 'Наблюдатель', 'Наблюдений', 'Видов'];
 				break;
+			case DataType.Summary:
+				names = ['Наблюдений', 'Видов', 'Наблюдателей', 'Экспертов'];
+				break;
 			default:
 				return [];
 			}
@@ -112,23 +116,23 @@ class Converter {
 			let item = null;
 			let position = 1;
 			const regexpCount = /^[0-9 ,.]+$/;
-			text.split('\n').forEach(line => {
+			text.split(/\r?\n/).forEach(line => {
 				line = line.trim();
+				if(line.length===0) return;
 				if (regexpCount.test(line)) {
 					if (item != null) items.push(item);
 					item = this.newItem();
+					item.position = position++;
 					item.count = line;
 				}
 				else if (item !== null) {
 					item.title.push(line);
-					item.title.push(position++);
-
 				}
 			});
 			if (item !== null) items.push(item);
 
 			if (items.length > 0) {
-				items.forEach(item => converted += `<tr>${this.#settings.addCounter ? '<td>'+item.title[1]+'</td>':''}<td>${item.title[0]}</td><td>${item.count[0]}</td></tr>\n`);
+				items.forEach(item => converted += `<tr>${this.#settings.addCounter ? '<td>'+item.position+'</td>':''}<td>${item.title[0]}</td><td>${item.count[0]}</td></tr>\n`);
 				}
 			return converted;
 		}
@@ -140,12 +144,13 @@ class Converter {
 			let position = 1;
 			const regexpCount = /^[A-Z]*([0-9 ,.]+)\s.+$/;
 
-			text.split('\n').forEach(line => {
+			text.split(/\r?\n/).forEach(line => {
 				line = line.trim();
+				if (line.length === 0) return;
 				let match = line.match(regexpCount);
 				if (!!match) {
 					if (item != null) {
-						item.title.push(position++);
+						item.position = position++;
 						items.push(item);
 					}
 					item = this.newItem();
@@ -174,7 +179,7 @@ class Converter {
 							title = `${item.title[0]} <em>(${item.title[1]})</em>`;
 						}
 					}
-					converted += `<tr>${this.#settings.addCounter ? '<td>' + item.title[2] + '</td>' : ''}<td>${title}</td><td>${item.count[0]}</td></tr>\n`}
+					converted += `<tr>${this.#settings.addCounter ? '<td>' + item.position + '</td>' : ''}<td>${title}</td><td>${item.count[0]}</td></tr>\n`}
 					);
 				}
 			return converted;
@@ -182,15 +187,15 @@ class Converter {
 		convertExperts(text) {
 			let converted = '';
 			const regexp = /^(.+)\t(.+)\t(.+)$/;
-			text.split('\n').forEach(line => {
+			text.split(/\r?\n/).forEach(line => {
 				if (/^\D+\t/.test(line)) return;
 				let item = this.newItem();
 				let match = line.match(regexp);
 				if (!!match) {
-					item.count = match[3];
-					item.title.push(match[1].trim());
+					item.position = match[1].trim();
 					item.title.push(match[2].trim());
-					converted += `<tr>${this.#settings.addCounter ? `<td>${item.title[0]}</td>` : ''}<td>${this.#settings.addUserlink ? '@' : ''}${item.title[1]}</td><td>${item.count[0]}</td></tr>\n`;
+					item.count = match[3];
+					converted += `<tr>${this.#settings.addCounter ? `<td>${item.position}</td>` : ''}<td>${this.#settings.addUserlink ? '@' : ''}${item.title[0]}</td><td>${item.count[0]}</td></tr>\n`;
 				}
 			});
 			return converted;
@@ -199,19 +204,37 @@ class Converter {
 		convertObservers(text) {
 			let converted = '';
 			const regexp = /^(.+)\t(.+)\t(.+)\t(.+)$/;
-			text.split('\n').forEach(line => {
+			text.split(/\r?\n/).forEach(line => {
 				if (/^\D+\t/.test(line)) return;
 				let item = this.newItem();
 				let match = line.match(regexp);
 				if (!!match) {
+					item.position = match[1].trim();
+					item.title.push(match[2].trim());
 					item.count = match[3];
 					item.count = match[4];
-					item.title.push(match[1].trim());
-					item.title.push(match[2].trim());
-					converted += `<tr>${this.#settings.addCounter ? `<td>${item.title[0]}</td>` : ''}<td>${this.#settings.addUserlink ? '@' : ''}${item.title[1]}</td><td>${item.count[0]}</td><td>${item.count[1]}</td></tr>\n`;
+					converted += `<tr>${this.#settings.addCounter ? `<td>${item.position}</td>` : ''}<td>${this.#settings.addUserlink ? '@' : ''}${item.title[0]}</td><td>${item.count[0]}</td><td>${item.count[1]}</td></tr>\n`;
 				}
 			});
 			return converted;
+		}
+
+		convertSummary(text) {
+			let converted = '<tr><td>';
+			const regexpCount = /^[0-9 ,.]+$/;
+			let item = this.newItem();
+			text.split(/\r?\n/).forEach(line => {
+				line = line.trim();
+				if(line.length===0) return;
+				if (regexpCount.test(line)) {
+					item.count = line.trim();
+				}
+			});
+			console.dir(item.count);
+			converted+= item.count.join('</td> <td>');
+
+			return converted+'</td></tr>';
+
 		}
 
 	convertText(text) {
@@ -255,6 +278,9 @@ class Converter {
 							break;
 						case DataType.Subprojects:
 							converted += this.convertSubProjects(block);
+							break;
+						case DataType.Summary:
+							converted += this.convertSummary(block);
 							break;
 						case DataType.Species:
 							converted += this.convertSpecies(block);
