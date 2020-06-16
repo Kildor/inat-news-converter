@@ -9,21 +9,19 @@
   }
 }
 
-.App {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-
-
 main {
-  display: flex;
-  flex: 1 0 auto;
-    max-height: calc(100vh - 6vmin);
+  display: grid;
+  grid-template: 'header header'
+    'in out';
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 6vmin 1fr;
+    width: 100vw;
+    height: 100vh;
   > div {
-    flex: 1 1 50%;
+    grid-area: in;
     background-color: #eee;
     margin: 0;
+    margin-right: 3px;
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -88,7 +86,9 @@ main {
     }
 
     & + div {
-      margin-left: 1vw;
+      margin-left: 3px;
+      margin-right: 0;
+      grid-area: out;
       &::before {
         content: '»»';
         position: absolute;
@@ -99,6 +99,7 @@ main {
         height: 2em;
         line-height: 2em;
         width: 2em;
+        text-align: center;
         font-size: 1rem;
         background-color: #fff;
         box-shadow: inset 1px 1px 1px #fff, 1px 1px 1px #000;
@@ -253,9 +254,9 @@ main {
   }
 }
 
-}
 
 .App-header {
+  grid-area: header;
   background-color: #282c34;
   display: flex;
   flex-direction: row;

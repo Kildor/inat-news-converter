@@ -7,7 +7,7 @@ import Header from './Header';
 import Help from './Help';
 import Panel from './Panel';
 import preferences from './preferences.json';
-import './App.scss';
+import './ConverterUI.scss';
 
  const Notes = (props)=>{
 	 let types = [{key: DataType.Observers, title: "Наблюдатели проекта"},
@@ -15,12 +15,12 @@ import './App.scss';
 		 { key: DataType.Species, title: 'Виды проекта'},
 		 { key: DataType.Subprojects, title: 'Подпроекты зонтичного проекта'},
 		 { key: DataType.Summary, title: 'Обзорные данные проекта'},
-		 { key: DataType.Text, title: 'Текст (разбиение на абзацы).', note: 'Если скрипт неверно разбирает строку, начните её со знака «\'»'},
+		 { key: DataType.Text,  title: 'Текст (разбиение на абзацы).', note: 'Если скрипт неверно разбирает строку, начните её со знака «\'»'},
 		 { key: DataType.Mixed, title: 'Смешанные данные (разделённые двумя переносами строки)'},
 	 ];
 
 	 return <Panel title='Поддерживаемые варианты данных' className='panel-notes'>
-		 <ul>{types.map(type => <li className={type.key === props.currentType ? "active" : null} key={type.key}>{type.title} {type.key < 5 && <var>!({type.key})</var>}{!!type.note && <small>{type.note}</small>}</li>)}</ul>
+		 <ul>{types.map(type => <li className={type.key === props.currentType ? "active" : null} key={type.key}>{type.title} {type.key < 6 && <var>!({type.key})</var>}{!!type.note && <small>{type.note}</small>}</li>)}</ul>
 	 </Panel>
  }
 
@@ -82,9 +82,8 @@ class ConverterUI extends Component {
 
 	render() {
 		return (
-			<div className="App">
+			<main className="App">
 				<Header clickHandler={this.onClickSwitcherHandler} isHTML={this.state.html} />
-				<main>
 				<div className='in-wp'>
 						<div className='wrapper'>
 					<textarea className='in' autoFocus onChange={this.onChangeHandler} ref={(el) => { this.areaIn = el; }} 
@@ -112,8 +111,7 @@ class ConverterUI extends Component {
 
 						<Settings handler={this.onChangeSettingsHandler} settings={this.state.settings} />
 				</div>
-				</main>
-			</div>
+			</main>
 		);
 	}
 }
