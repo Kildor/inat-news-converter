@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 
-import Settings from './Settings';
- import Converter from './Converter';
+import SettingsUI, {Settings} from './Settings';
+import Converter from './Converter';
 import DataType from './DataType';
 import Header from './Header';
 import Help from './Help';
@@ -38,7 +38,7 @@ class ConverterUI extends Component {
 			settings: {}
 		};
 		for(let p of preferences) {
-			this.state.settings[p.name] = p.default;
+			this.state.settings[p.name] = Settings.get(p.name, p.default);
 		}
 		this.onChangeHandler = this.onChangeHandler.bind(this);
 		this.copyHandler = this.copyHandler.bind(this);
@@ -69,6 +69,7 @@ class ConverterUI extends Component {
 
 	onChangeSettingsHandler (e) {
 		let newSettings = this.state.settings;
+		Settings.set(e.target.name, e.target.checked);
 		newSettings[e.target.name]=e.target.checked;
 		this.setState({settings: newSettings});
 		this.converter.updateSettings(newSettings);
@@ -89,7 +90,9 @@ class ConverterUI extends Component {
 					<textarea className='in' autoFocus onChange={this.onChangeHandler} ref={(el) => { this.areaIn = el; }} 
 					defaultValue={this.props.text}/>
 					<Help/>
-					<button className='btn-clear' onClick={this.onClearHandler} title='Clear'><span role='img' aria-label='Clear'>❌</span></button>
+					{this.state.value.length > 0 && 
+						<button className='btn-clear' onClick={this.onClearHandler} title='Clear'><span role='img' aria-label='Clear'>❌</span></button>
+						}
 				</div>
 					<Notes currentType={this.state.currentType}/>
 				</div>
@@ -109,7 +112,7 @@ class ConverterUI extends Component {
 					}
 						</div>
 
-						<Settings handler={this.onChangeSettingsHandler} settings={this.state.settings} />
+						<SettingsUI handler={this.onChangeSettingsHandler} settings={this.state.settings} />
 				</div>
 			</main>
 		);

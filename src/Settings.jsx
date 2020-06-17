@@ -17,3 +17,29 @@ export default ({ handler, settings }) => {
 		{s}
 	</Panel>);
 };
+
+export class Settings {
+	static SettingsName = 'inat-converter';
+
+	static loadFromStorage = ()=> {
+		try {
+		let val = localStorage.getItem(this.SettingsName);
+		if (val === null) val = "{}";
+		return JSON.parse(val);
+		} catch(e) {
+			return {};
+		}
+	}
+	static get = (name, def) => {
+		const settings = this.loadFromStorage();
+	
+		if (settings.hasOwnProperty(name)) return settings[name];
+		return def;
+	}
+	static set = (name, value) => {
+		const settings = this.loadFromStorage();
+		settings[name] = value;
+		localStorage.setItem(this.SettingsName, JSON.stringify(settings));
+		return value;
+	}
+}
