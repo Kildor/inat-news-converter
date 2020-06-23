@@ -20,15 +20,13 @@ import './ConverterUI.scss';
 	 ];
 
 	 return <Panel title='Поддерживаемые варианты данных' className='panel-notes'>
-		 <ul>{types.map(type => <li className={type.key === props.currentType ? "active" : null} key={type.key}>{type.title} {type.key < 6 && <var>!({type.key})</var>}{!!type.note && <small>{type.note}</small>}</li>)}</ul>
+		 <ul>
+			 {types.map(type => <li className={type.key === props.currentType ? "active" : null} key={type.key}>{type.title} {type.key < 6 && <var>!({type.key})</var>}{!!type.note && <small>{type.note}</small>}</li>)}
+			 </ul>
 	 </Panel>
  }
 
 class ConverterUI extends Component {
-
-	componentDidMount() {
-		this.setState({ value: this.converter.convert(this.areaIn.value)});
-	}
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -56,7 +54,7 @@ class ConverterUI extends Component {
 			}, 5000)
 	}
 	onChangeHandler (e) {
-		this.areaIn.value = this.areaIn.value.replace(/\r/g,'');
+		this.areaIn.value = this.areaIn.value.replace(/\r/g, '');
 		this.setState({ value: this.converter.convert(this.areaIn.value), currentType: this.converter.lastConvertedType,copied:false });
 	}
 	onClickSwitcherHandler (e) {
@@ -65,6 +63,7 @@ class ConverterUI extends Component {
 	onClearHandler (e) {
 		this.areaIn.value = '';
 		this.onChangeHandler(e);
+
 	}
 
 	onChangeSettingsHandler (e) {
@@ -73,8 +72,7 @@ class ConverterUI extends Component {
 		newSettings[e.target.name]=e.target.checked;
 		this.setState({settings: newSettings});
 		this.converter.updateSettings(newSettings);
-		this.setState({ value: this.converter.convert(this.areaIn.value)});	
-
+		this.onChangeHandler(e);
 	}
 
 	showHTML(){

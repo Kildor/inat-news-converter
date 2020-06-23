@@ -11,7 +11,7 @@ const Setting = (props) => {
 	);
 }
 export default ({ handler, settings }) => {
-	let s = preferences.map(pref => <Setting key={pref.name} name={pref.name} handler={handler} value={settings[pref.name]} >{pref.title}{pref.note?<><br/><small>{pref.note}</small></>:null}</Setting>);
+	let s = preferences.map(pref => <Setting key={pref.name} name={pref.name} handler={handler} value={settings[pref.name]} >{pref.title}{!!pref.note && <><br/><small>{pref.note}</small></>}</Setting>);
 
 	return (<Panel className='panel-settings' title='Настройки конвертера'>
 		{s}
