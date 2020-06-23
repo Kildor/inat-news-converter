@@ -72,7 +72,7 @@ class Converter {
 	};
 
 	writeTableHeader(text) {
-		if (!this.#settings.showHeader) {
+		if (this.#settings.showHeader) {
 			let firstLine = text.substr(0, text.indexOf('\n')).trim();
 			let match = firstLine.match(/^!\(\d\s*!!(.+)(?=!!)?\)$/);
 
