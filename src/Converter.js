@@ -12,7 +12,7 @@ class Item {
 		this.removeDelimeters = removeDelimeters;
 	}
 	get count() {
-		if (this.#count.length === 0) this.#count.push(0);
+		if (this.#count.length === 0) this.#count.push('0');
 		if (!this.removeDelimeters) return this.#count;
 		return this.#count.map(count => count.replace(/[\D]/g, ''));
 	}
@@ -111,6 +111,7 @@ class Converter {
 		if (!this.#settings.addCounter) names.shift();
 		return names;
 	}
+
 	convertSubProjects(text) {
 		let converted = '';
 		let items = [];
@@ -161,7 +162,7 @@ class Converter {
 				item.title.push(line);
 		});
 		if (item !== null) {
-			item.title.push(position++);
+			item.position = position++;
 			items.push(item);
 		}
 
