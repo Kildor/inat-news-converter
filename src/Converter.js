@@ -103,7 +103,7 @@ class Converter {
 				names = ['Место', 'Наблюдатель', 'Наблюдений', 'Видов'];
 				break;
 			case DataType.Summary:
-				names = ['Наблюдений', 'Видов', 'Наблюдателей', 'Экспертов'];
+				names = ['Наблюдений', 'Видов', 'Экспертов', 'Наблюдателей'];
 				break;
 			default:
 				return [];
@@ -233,7 +233,6 @@ class Converter {
 				item.count = line.trim();
 			}
 		});
-		console.dir(item.count);
 		converted += item.count.join('</td> <td>');
 
 		return converted + '</td></tr>';
