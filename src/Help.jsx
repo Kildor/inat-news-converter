@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react'
 import Converter from './Converter';
 import helpFile from './help.md';
 
-const converter = new Converter({useMarkdown: true});
+const converter = new Converter({useMarkdown: true, showHeader: true});
 
 
 export default () => {

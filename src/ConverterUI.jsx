@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 
 import SettingsUI, {Settings} from './Settings';
 import Converter from './Converter';
-import DataType from './DataType';
+import DataType, { types } from './DataType';
 import Header from './Header';
 import Help from './Help';
 import Panel from './Panel';
@@ -10,18 +10,9 @@ import preferences from './preferences.json';
 import './ConverterUI.scss';
 
  const Notes = (props)=>{
-	 let types = [{key: DataType.Observers, title: "Наблюдатели проекта"},
-		 { key: DataType.Experts, title: 'Эксперты проекта'},
-		 { key: DataType.Species, title: 'Виды проекта'},
-		 { key: DataType.Subprojects, title: 'Подпроекты зонтичного проекта'},
-		 { key: DataType.Summary, title: 'Обзорные данные проекта'},
-		 { key: DataType.Text,  title: 'Текст (разбиение на абзацы).', note: 'Если скрипт неверно разбирает строку, начните её со знака «\'»'},
-		 { key: DataType.Mixed, title: 'Смешанные данные (разделённые двумя переносами строки)'},
-	 ];
-
 	 return <Panel title='Поддерживаемые варианты данных' className='panel-notes'>
 		 <ul>
-			 {types.map(type => <li className={type.key === props.currentType ? "active" : null} key={type.key}>{type.title} {type.key < 6 && <var>!({type.key})</var>}{!!type.note && <small>{type.note}</small>}</li>)}
+			 {types.map(type => <li className={type.key === props.currentType ? "active" : null} key={type.key}>{type.title} {type.key < DataType.Mixed && <var>!({type.key})</var>}{!!type.note && <small>{type.note}</small>}</li>)}
 			 </ul>
 	 </Panel>
  }

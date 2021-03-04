@@ -59,9 +59,9 @@ class Converter {
 			return DataType.Text;
 		else if (/^!\(\s*([\d]\s*)/.test(firstLine)) // !(type [!! colname !! colname ...])
 			return parseInt(firstLine.match(/^!\(([\d])/)[1]);
-		else if (/^(.+)\t(.+)\t(.+)\t(.+)$/.test(firstLine))
+		else if (/^([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)$/.test(firstLine))
 			return DataType.Observers;
-		else if (/^(.+)\t(.+)\t(.+)$/.test(firstLine))
+		else if (/^([^\t]+)\t([^\t]+)\t([^\t]+)$/.test(firstLine))
 			return DataType.Experts;
 		else if (/^\s*[\d ,]+\s*$/.test(firstLine))
 			return DataType.Subprojects;
@@ -72,14 +72,17 @@ class Converter {
 	};
 
 	writeTableHeader(text) {
+		console.dir(text);
 		if (this.#settings.showHeader) {
 			let firstLine = text.substr(0, text.indexOf('\n')).trim();
-			let match = firstLine.match(/^!\(\d\s*!!(.+)(?=!!)?\)$/);
+			let match = firstLine.match(/^!\(\d\s*(?:!!|\t)?(.+?)(?=!!|\t)?\s*\)$/);
 
 			let names = [];
 
 			if (match) {
-				names = match[1].trim().split(/\s*!!\s*/)
+				names = match[1].trim().split(/\s*(?:!!|\t)\s*/);
+				console.dir(match);
+				console.dir(names);
 			} else {
 				names = this.takeDefaultNames();
 			}
@@ -108,7 +111,7 @@ class Converter {
 			default:
 				return [];
 		}
-		if (!this.#settings.addCounter) names.shift();
+		if (!this.#settings.addCounter && this.lastConvertedType < DataType.Summary) names.shift();
 		return names;
 	}
 
@@ -246,9 +249,18 @@ class Converter {
 		if (this.#settings.useMarkdown) {
 			converted = this.markdown.render(text);
 		} else {
-			converted = '<p>' + text + '</p>'
+			converted = '<p>' + text.replaceAll('\n','<br/>') + '</p>'
 		}
 		return converted + '\n';
+	}
+
+	convertTable(text) {
+		let converted = text.split(/\r?\n/).reduce((converted,line)=>{
+			if (line.trim().indexOf('!(')===-1) converted+=`<tr><td>${line.replaceAll('\t', '</td><td>')}</td></tr>\n`;
+			return converted;
+		}, '');
+		return converted;
+
 	}
 
 	convert(text) {
@@ -270,7 +282,7 @@ class Converter {
 				converted += this.convertText(block);
 			} else {
 				converted += "<table class='table table-striped table-hover table-condensed'>\n";
-				converted += this.writeTableHeader(text);
+				converted += this.writeTableHeader(block);
 				switch (this.lastConvertedType) {
 					case DataType.Observers:
 						converted += this.convertObservers(block);
@@ -286,6 +298,9 @@ class Converter {
 						break;
 					case DataType.Species:
 						converted += this.convertSpecies(block);
+						break;
+					case DataType.Tabbed:
+						converted += this.convertTable(block);
 						break;
 					case DataType.UNKNOWN:
 					default:
